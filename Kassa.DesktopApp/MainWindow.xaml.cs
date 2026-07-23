@@ -20,5 +20,13 @@ namespace Kassa.DesktopApp
         {
             InitializeComponent();
         }
+
+        private void SayHello_Click(object sender, RoutedEventArgs e)
+        {
+            SayHello.Content = "Hello Bro!";
+            SayHello.Background = System.Windows.Media.Brushes.Red;
+
+            MessageBox.Show("K cha bro", "Hello");
+        }
     }
 }
