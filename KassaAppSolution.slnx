@@ -1,3 +1,6 @@
 <Solution>
+  <Project Path="Kassa.Application/Kassa.Application.csproj" Id="cb180b58-cab9-4746-acc2-799137b1835c" />
   <Project Path="Kassa.DesktopApp/Kassa.DesktopApp.csproj" Id="a277dc43-505e-42bd-85a9-05d0ba409e87" />
+  <Project Path="Kassa.Domain/Kassa.Domain.csproj" Id="43ec6047-4107-4789-8192-1e8a2e6e29fa" />
+  <Project Path="Kassa.Infrastructure/Kassa.Infrastructure.csproj" Id="2bd03932-1393-4134-9e65-2b17eaba61e4" />
 </Solution>
