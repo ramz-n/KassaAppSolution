@@ -8,7 +8,7 @@ namespace Kassa.Infrastructure.Seed
         {
             await context.Database.EnsureCreatedAsync();
 
-            if (!context.Products.Any())
+            if (!context.Products.Any() )
             {
                 var products = new List<Product>()
                 {
@@ -16,8 +16,20 @@ namespace Kassa.Infrastructure.Seed
                    new() {Id=2, ProductName="Milk", Price=200, Barcode="8710400001022"  },
                    new() {Id=3, ProductName="Tea", Price=60, Barcode="8710400001011"  },
                 };
-                context.Products.AddRange(products);
+                context.Products.AddRange(products);     
             }
+
+            if(!context.Cashiers.Any())
+            {
+                var cashiers = new List<Cashier>()
+                {
+                   new() { Name="Qaium", PinCode="1234", IsActive=true },
+                   new() {Name="Ram", PinCode="1111", IsActive=true },
+                   new() { Name="Yusuf", PinCode="2222", IsActive=true },
+                };
+                context.Cashiers.AddRange(cashiers);
+            }
+
             await context.SaveChangesAsync();
         }
     }
