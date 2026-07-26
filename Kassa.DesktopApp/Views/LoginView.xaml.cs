@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using Kassa.DesktopApp.ViewModels;
+using System.Windows.Controls;
 
 namespace Kassa.DesktopApp.Views
 {
@@ -11,7 +12,10 @@ namespace Kassa.DesktopApp.Views
 
         private void PinBox_PasswordChanged(object sender, System.Windows.RoutedEventArgs e)
         {
-
+            if (DataContext is LoginViewModel viewModel)
+            {
+                viewModel.PinCode = PinBox.Password;
+            }
         }
     }
 }
