@@ -18,6 +18,18 @@ namespace Kassa.DesktopApp
 
         protected override async void OnStartup(StartupEventArgs e)
         {
+            var culture = new System.Globalization.CultureInfo("en-Np");
+
+            culture.NumberFormat.CurrencySymbol = "Rs. ";
+
+            Thread.CurrentThread.CurrentCulture = culture;
+            Thread.CurrentThread.CurrentUICulture = culture;
+
+            FrameworkElement.LanguageProperty.OverrideMetadata(
+                typeof(FrameworkElement),
+                new FrameworkPropertyMetadata(System.Windows.Markup.XmlLanguage.GetLanguage(culture.IetfLanguageTag))
+            );
+
             AppHost = Host.CreateDefaultBuilder()
                 .ConfigureAppConfiguration((_, config) =>
                 {
@@ -40,6 +52,7 @@ namespace Kassa.DesktopApp
 
                     services.AddTransient<ProductViewModel>();
                     services.AddTransient<LoginViewModel>();
+                    services.AddTransient<CheckoutViewModel>();
 
                     services.AddTransient<MainWindow>();
                 })
