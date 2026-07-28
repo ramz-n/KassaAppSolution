@@ -2,10 +2,12 @@
 using Kassa.DesktopApp.Common;
 using Kassa.Domain.Entities;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Kassa.DesktopApp.ViewModels
 {
-    public class ProductViewModel
+    public class ProductViewModel: INotifyPropertyChanged
     {
         private readonly IProductRepository _productRepository;
 
@@ -25,6 +27,7 @@ namespace Kassa.DesktopApp.ViewModels
 
 
         public event EventHandler? BackRequested;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
         public Product? SelectedProduct
         {
@@ -38,6 +41,7 @@ namespace Kassa.DesktopApp.ViewModels
                 {
                     _selectedProduct = value;
                     LoadEditFields(value);
+                    OnPropertyChanged();
                 }
             }
         }
@@ -49,6 +53,7 @@ namespace Kassa.DesktopApp.ViewModels
                 if (_editBarcode != value)
                 {
                     _editBarcode = value;
+                    OnPropertyChanged();
                 }
             }
         }
@@ -60,6 +65,7 @@ namespace Kassa.DesktopApp.ViewModels
                 if (_editName != value) 
                 { 
                     _editName = value;
+                    OnPropertyChanged();
                 }
             } 
         }
@@ -72,6 +78,7 @@ namespace Kassa.DesktopApp.ViewModels
                 if (_editPrice != value)
                 {
                     _editPrice = value;
+                    OnPropertyChanged();
                 }
             }
         }
@@ -83,6 +90,7 @@ namespace Kassa.DesktopApp.ViewModels
                 if(_editPrice != value)
                 {
                     _editPrice= value;
+                    OnPropertyChanged();
                 }
             }
         }
@@ -94,6 +102,7 @@ namespace Kassa.DesktopApp.ViewModels
                 if (_editStock != value)
                 {
                     _editStock = value;
+                    OnPropertyChanged();
                 }
             }
         }
@@ -105,7 +114,8 @@ namespace Kassa.DesktopApp.ViewModels
                 if(_errorMessage != value)
                 {
                     _errorMessage = value;
-                }  
+                    OnPropertyChanged();
+                }
             }
         }
 
@@ -145,6 +155,11 @@ namespace Kassa.DesktopApp.ViewModels
             EditPrice = (p?.Price ?? 0m).ToString("0.00");
             EditTax = (p?.Tax ?? 0.21m).ToString("0.00");
             EditStock = (p?.StockQty ?? 0m).ToString("0.###");
+        }
+
+        protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
 }
