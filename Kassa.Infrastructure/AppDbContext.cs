@@ -10,6 +10,7 @@ namespace Kassa.Infrastructure
         }
         public DbSet<Product> Products => Set<Product>();
         public DbSet<Cashier> Cashiers => Set<Cashier>();
+        public DbSet<KassaSession> KassaSessions => Set<KassaSession>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -17,7 +18,13 @@ namespace Kassa.Infrastructure
             {
                 e.Property(c => c.PinCode).HasMaxLength(4);
             });
-                
+
+            modelBuilder.Entity<KassaSession>(e =>
+            {
+                e.HasOne(s => s.Cashier)
+                    .WithMany()
+                    .HasForeignKey(s => s.CashierId);
+            });
         }
     }
 }
