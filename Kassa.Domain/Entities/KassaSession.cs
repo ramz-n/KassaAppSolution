@@ -21,4 +21,3 @@
         public bool IsClosed { get; set; }
     }
 }
-}
