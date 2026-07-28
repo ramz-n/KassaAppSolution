@@ -12,7 +12,7 @@
                           DisplayMemberPath="Name" FontSize="16" Padding="6" Margin="0,0,0,12"/>
                 
                 <TextBlock Text="PINCODE" FontWeight="SemiBold"/>
-                <PasswordBox x:Name="PinBox" FontSize="20" Padding="6" PasswordChanged="PinBox_PasswordChanged"/>
+                <PasswordBox x:Name="PinBox" FontSize="20" Padding="6" PasswordChanged="PinBox_PasswordChanged" MaxLength="4"/>
 
                 <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" Margin="0,8,0,0"
                            HorizontalAlignment="Center" TextWrapping="Wrap"/>

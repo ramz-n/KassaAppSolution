@@ -49,6 +49,7 @@ namespace Kassa.DesktopApp
 
                     services.AddScoped<IProductRepository, ProductRepository>();
                     services.AddScoped<ICashierRepository, CashierRepository>();
+                    services.AddScoped<IKassaSessionRepository, KassaSessionRepository>();
 
                     services.AddTransient<ProductViewModel>();
                     services.AddTransient<LoginViewModel>();
