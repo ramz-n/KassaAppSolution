@@ -17,6 +17,7 @@ namespace Kassa.DesktopApp.ViewModels
         public KassaSession? OpenSession { get; private set; }
 
         public RelayCommand LogoutCommand { get; }
+        public RelayCommandAsync ScanBarcodeCommand { get; }
         public RelayCommand OpenProductsCommand { get; }
         public RelayCommandAsync OpenKassaCommand { get; }
         public RelayCommandAsync CloseKassaCommand { get; }
@@ -66,7 +67,6 @@ namespace Kassa.DesktopApp.ViewModels
             }
         }
 
-        // INotifyPropertyChanged
         public event PropertyChangedEventHandler? PropertyChanged;
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
@@ -84,6 +84,7 @@ namespace Kassa.DesktopApp.ViewModels
             _productRepository = productRepository;
             _kassSessionRepository = kassaSessionRepository;
 
+            ScanBarcodeCommand = new RelayCommandAsync(ScanBarcodeAsync);
             LogoutCommand = new RelayCommand(() => LogoutRequested?.Invoke(this, EventArgs.Empty));
             OpenProductsCommand = new RelayCommand(() => OpenProductsRequested?.Invoke(this, EventArgs.Empty));
             OpenKassaCommand = new RelayCommandAsync(OpenKassaAsync);
@@ -103,7 +104,7 @@ namespace Kassa.DesktopApp.ViewModels
             OpenSession = new KassaSession
             {
                 CashierId = CurrentCashier.Id,
-                OpenedAt = DateTime.Now,
+                OpenedAt = DateTime.UtcNow,
                 StartingCash = 1000.00m,
                 IsClosed = false
             };
@@ -121,7 +122,7 @@ namespace Kassa.DesktopApp.ViewModels
             OpenSession.ExpectedCash = OpenSession.StartingCash + 1000.00m;
             OpenSession.CountedCash = OpenSession.ExpectedCash;
             OpenSession.CashDifference = OpenSession.CountedCash - OpenSession.ExpectedCash;
-            OpenSession.ClosedAt = DateTime.Now;
+            OpenSession.ClosedAt = DateTime.UtcNow;
             OpenSession.IsClosed = true;
 
             await _kassSessionRepository.UpdateAsync(OpenSession);
