@@ -70,7 +70,7 @@
                     <TextBlock Text="Price (tax included)"/>
                     <TextBox Text="{Binding EditPrice}" Margin="0,2,0,10" Padding="6"/>
 
-                    <TextBlock Text="Tax rate (e.g. 0.21 = 21%)"/>
+                    <TextBlock Text="Tax rate (e.g. 0.13 = 13%)"/>
                     <TextBox Text="{Binding EditTax}" Margin="0,2,0,10" Padding="6"/>
 
                     <TextBlock Text="Stock Quantity"/>
