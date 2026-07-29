@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using Kassa.Domain.Entities;
 using System.Globalization;
-using System.Text;
 using System.Windows.Data;
 
 namespace Kassa.DesktopApp.Converters
@@ -24,6 +22,19 @@ namespace Kassa.DesktopApp.Converters
                 return localTime.ToUniversalTime();
             }
             return value;
+        }
+    }
+
+    public class KassaStatusConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return value is KassaSession ? "OPEN" : "CLOSED";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            throw new NotImplementedException();
         }
     }
 }
