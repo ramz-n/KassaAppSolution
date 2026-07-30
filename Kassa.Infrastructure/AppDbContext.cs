@@ -16,6 +16,7 @@ namespace Kassa.Infrastructure
         {
             modelBuilder.Entity<Product>(e =>
             {
+                e.Property(p => p.Id).UseIdentityByDefaultColumn();
                 e.Property(p => p.UnitType).HasConversion<string>();
             });
             modelBuilder.Entity<Cashier>(e =>
