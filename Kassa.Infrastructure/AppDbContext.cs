@@ -14,6 +14,10 @@ namespace Kassa.Infrastructure
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            modelBuilder.Entity<Product>(e =>
+            {
+                e.Property(p => p.UnitType).HasConversion<string>();
+            });
             modelBuilder.Entity<Cashier>(e =>
             {
                 e.Property(c => c.PinCode).HasMaxLength(4);
