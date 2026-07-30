@@ -8,5 +8,7 @@ namespace Kassa.Application.Interfaces
         Task<Product?> GetProductByBarcodeAsync(string barcode);
         Task<List<Product>> SearchProductByNameAsync(string search);
         Task<List<Product>> GetLowStockProductsAsync();
+        Task AddProductAsync(Product product);
+        Task UpdateProductAsync(Product product);
     }
 }

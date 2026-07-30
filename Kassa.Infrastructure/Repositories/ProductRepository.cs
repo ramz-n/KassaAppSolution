@@ -38,5 +38,17 @@ namespace Kassa.Infrastructure.Repositories
                 .OrderBy(p => p.StockQty)
                 .ToListAsync();
         }
+
+        public async Task AddProductAsync(Product product)
+        {
+            _context.Products.Add(product);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateProductAsync(Product product)
+        {
+            _context.Products.Update(product);
+            await _context.SaveChangesAsync();
+        }
     }
 }
