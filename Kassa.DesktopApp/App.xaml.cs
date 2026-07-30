@@ -1,4 +1,6 @@
-﻿using Kassa.Application.Interfaces;
+﻿using Kassa.Application.Cart;
+using Kassa.Application.Interfaces;
+using Kassa.Application.Services;
 using Kassa.DesktopApp.ViewModels;
 using Kassa.Infrastructure;
 using Kassa.Infrastructure.Repositories;
@@ -50,6 +52,10 @@ namespace Kassa.DesktopApp
                     services.AddScoped<IProductRepository, ProductRepository>();
                     services.AddScoped<ICashierRepository, CashierRepository>();
                     services.AddScoped<IKassaSessionRepository, KassaSessionRepository>();
+
+                    services.AddSingleton<ITaxCalculator, TaxCalculator>();
+
+                    services.AddTransient<ICartService, CartService>();
 
                     services.AddTransient<ProductViewModel>();
                     services.AddTransient<LoginViewModel>();

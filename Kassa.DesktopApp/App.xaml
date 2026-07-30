@@ -5,5 +5,8 @@
     <Application.Resources>
         <conv:KassaStatusConverter x:Key="KassaStatusConverter" />
         <conv:UtcToLocalTimeConverter x:Key="UtcToLocalTimeConverter" />
+        <conv:BoolToCollapsedConverter x:Key="BoolToCollapsedConverter" />
+        <conv:PaymentMethodConverter x:Key="PaymentMethodConverter" />
+        <conv:PaymentMethodVisibilityConverter x:Key="PaymentMethodVisibilityConverter" />
     </Application.Resources>
 </Application>
