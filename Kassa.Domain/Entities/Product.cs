@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Kassa.Domain.Enums;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -10,6 +11,7 @@ namespace Kassa.Domain.Entities
         public required string ProductName { get; set; }
         public required string  Barcode { get; set; }
         public decimal Price { get; set; }
+        public UnitType UnitType { get; set; } = UnitType.Piece;
         public decimal StockQty { get; set; }
         public decimal LowStockQty { get; set; } = 3;
         public decimal Tax { get; set; }
