@@ -5,17 +5,16 @@ using System.Runtime.CompilerServices;
 
 namespace Kassa.DesktopApp.ViewModels
 {
-    public class ScannedItemViewModel: INotifyPropertyChanged
+    public class CartScannedItemViewModel : INotifyPropertyChanged
     {
-        public ScannedItem Model { get;  }
-        private readonly Action _onChanged;
-
         public event PropertyChangedEventHandler? PropertyChanged;
+        public ScannedItem Model { get; }
+        private readonly Action _onChanged;
 
         public string ProductName => Model.ProductName;
         public string Barcode => Model.Barcode;
         public string UnitLabel => Model.UnitType == UnitType.Weight ? "kg" : "pcs";
-        public decimal NetTotal => Model.NetTotal;
+
         public decimal Quantity
         {
             get => Model.Quantity;
@@ -42,7 +41,10 @@ namespace Kassa.DesktopApp.ViewModels
                 _onChanged();
             }
         }
-        public ScannedItemViewModel(ScannedItem model, Action onChanged)
+
+        public decimal NetTotal => Model.NetTotal;
+
+        public CartScannedItemViewModel(ScannedItem model, Action onChanged)
         {
             Model = model;
             _onChanged = onChanged;

@@ -1,8 +1,11 @@
-﻿using System.ComponentModel;
-using System.Runtime.CompilerServices;
+﻿using Kassa.Application.Cart;
 using Kassa.Application.Interfaces;
 using Kassa.DesktopApp.Common;
 using Kassa.Domain.Entities;
+using Kassa.Domain.Enums;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 
 namespace Kassa.DesktopApp.ViewModels
 {
@@ -10,7 +13,7 @@ namespace Kassa.DesktopApp.ViewModels
     {
         private readonly IProductRepository _productRepository;
         private readonly IKassaSessionRepository _kassSessionRepository;
-
+        private readonly ICartService _cart;
         public Cashier CurrentCashier { get; private set; } = null!;
         public KassaSession? OpenSession { get; private set; }
 
@@ -19,6 +22,7 @@ namespace Kassa.DesktopApp.ViewModels
         public RelayCommand OpenProductsCommand { get; }
         public RelayCommandAsync OpenKassaCommand { get; }
         public RelayCommandAsync CloseKassaCommand { get; }
+        public RelayCommand RemoveScannedItemCommand { get; }
 
         public event EventHandler? LogoutRequested;
         public event EventHandler? OpenProductsRequested;
@@ -66,9 +70,68 @@ namespace Kassa.DesktopApp.ViewModels
         }
 
         public event PropertyChangedEventHandler? PropertyChanged;
-        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+
+        public ObservableCollection<CartScannedItemViewModel> CartScannedItems { get; } = new();
+
+        private decimal _subtotal;
+        private decimal _taxTotal;
+        private decimal _grandTotal;
+        public decimal Subtotal { 
+            get => _subtotal;
+            private set 
+            {
+                if (_subtotal != value) {
+                    _subtotal = value;
+                    OnPropertyChanged();
+                }
+            } 
+        }
+        public decimal TaxTotal {
+            get => _taxTotal;
+            private set
+            {
+                if (_taxTotal != value)
+                {
+                    _taxTotal = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        public decimal GrandTotal {
+            get => _grandTotal;
+            private set
+            {
+                if (_grandTotal != value)
+                {
+                    _grandTotal  = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+        private string _amountTenderedInput = string.Empty;
+        public string AmountTenderedInput { 
+            get => _amountTenderedInput; 
+            set {
+                if (_amountTenderedInput != value)
+                {
+                    _amountTenderedInput = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+
+        public string ChangeDuePreview
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            get
+            {
+                if (decimal.TryParse(AmountTenderedInput, out var tendered))
+                {
+                    var change = tendered - GrandTotal;
+                    return change >= 0 ? $"Change: {change:C}" : "Insufficient amount";
+                }
+                return string.Empty;
+            }
         }
 
         public void Initialize(Cashier cashier)
@@ -77,12 +140,14 @@ namespace Kassa.DesktopApp.ViewModels
             _ = LoadOpenSessionAsync();
         }
 
-        public CheckoutViewModel(IProductRepository productRepository, IKassaSessionRepository kassaSessionRepository)
+        public CheckoutViewModel(IProductRepository productRepository, IKassaSessionRepository kassaSessionRepository, ICartService cartService)
         {
             _productRepository = productRepository;
             _kassSessionRepository = kassaSessionRepository;
+            _cart = cartService;
 
             ScanBarcodeCommand = new RelayCommandAsync(ScanBarcodeAsync);
+            RemoveScannedItemCommand = new RelayCommand(p => RemoveScannedItem(p as CartScannedItemViewModel));
             LogoutCommand = new RelayCommand(() => LogoutRequested?.Invoke(this, EventArgs.Empty));
             OpenProductsCommand = new RelayCommand(() => OpenProductsRequested?.Invoke(this, EventArgs.Empty));
             OpenKassaCommand = new RelayCommandAsync(OpenKassaAsync);
@@ -156,6 +221,41 @@ namespace Kassa.DesktopApp.ViewModels
             }
 
             // Implement add to cart later 
+            var qty = product.UnitType == UnitType.Weight ? 0.5m : 1m;
+            _cart.AddProduct(product, qty);
+            RefreshCart();
+            StatusMessage = $"Added: {product.ProductName}";
+            IsError = false;
+        }
+
+        private void RemoveScannedItem(CartScannedItemViewModel? scannedProduct)
+        {
+            if (scannedProduct is null) return;
+            _cart.RemoveScannedItem(scannedProduct.Model);
+        }
+        protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
+        private void RefreshCart()
+        {
+            CartScannedItems.Clear();
+            foreach (var line in _cart.ScannedItems)
+                CartScannedItems.Add(new CartScannedItemViewModel(line, RecalculateTotals));
+
+            RecalculateTotals();
+
+            //Add payment functionality later
+        }
+
+        private void RecalculateTotals()
+        {
+            var summary = _cart.GetSummary();
+            Subtotal = summary.Subtotal;
+            TaxTotal = summary.TaxTotal;
+            GrandTotal = summary.GrandTotal;
+            OnPropertyChanged(nameof(ChangeDuePreview));
         }
     }
 }
