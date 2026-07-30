@@ -20,11 +20,11 @@
                     <Run Text="{Binding OpenSession, Converter={StaticResource KassaStatusConverter}, Mode=OneWay}" FontWeight="Bold"/>
                 </TextBlock>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal">
-                    <Button Content="Open Register" Command="{Binding OpenKassaCommand}" FontSize="14"  Padding="5"/>
-                    <Button Content="Close Register" Command="{Binding CloseKassaCommand}" FontSize="14"  Padding="5"/>
+                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,0,0">
+                    <Button Content="Open Register" Command="{Binding OpenKassaCommand}" FontSize="14"  Padding="5" Background="Green"/>
+                    <Button Content="Close Register" Command="{Binding CloseKassaCommand}" FontSize="14"  Padding="5" Background="Yellow"/>
                     <Button Content="Products" Command="{Binding OpenProductsCommand}" Margin="0, 0 , 10, 0" FontSize="14" Padding="5"/>
-                    <Button Content="Log Out" FontSize="14" Command="{Binding LogoutCommand}" Padding="5"/>
+                    <Button Content="Log Out" FontSize="14" Command="{Binding LogoutCommand}" Padding="5" Background="Red" />
                 </StackPanel>
             </Grid>
         </Border>
@@ -60,7 +60,73 @@
                         </Style>
                     </TextBlock.Style>
                 </TextBlock>
+
+                <DataGrid Grid.Row="2" ItemsSource="{Binding CartScannedItems}" AutoGenerateColumns="False"
+                          CanUserAddRows="False" RowHeight="40" FontSize="15" IsReadOnly="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Product" Binding="{Binding ProductName}" IsReadOnly="True" Width="2*"/>
+                        <DataGridTextColumn Header="Qty" Binding="{Binding Quantity, UpdateSourceTrigger=LostFocus}" Width="70"/>
+                        <DataGridTextColumn Header="Unit" Binding="{Binding UnitLabel}" IsReadOnly="True" Width="50"/>
+                        <DataGridTextColumn Header="Price" Binding="{Binding UnitPrice, StringFormat=C}" IsReadOnly="True" Width="80"/>
+                        <DataGridTextColumn Header="Discount" Binding="{Binding DiscountAmount, UpdateSourceTrigger=LostFocus, StringFormat=C}" Width="80"/>
+                        <DataGridTextColumn Header="Total" Binding="{Binding NetTotal, StringFormat=C}" IsReadOnly="True" Width="90"/>
+                        <DataGridTemplateColumn Header="" Width="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Content="Remove" Padding="6,2"
+                                            Command="{Binding DataContext.RemoveScannedItemCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
+                                            CommandParameter="{Binding}"/>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
             </Grid>
+
+            <Border Grid.Column="2" Background="White" CornerRadius="10" Padding="20">
+                <StackPanel>
+                    <TextBlock Text="Order Summary" FontSize="20" FontWeight="Bold" Margin="0,0,0,16"/>
+
+                    <Grid Margin="0,0,0,4">
+                        <TextBlock Text="Subtotal" HorizontalAlignment="Left"/>
+                        <TextBlock Text="{Binding Subtotal, StringFormat=C}" HorizontalAlignment="Right"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,4">
+                        <TextBlock Text="Tax" HorizontalAlignment="Left"/>
+                        <TextBlock Text="{Binding TaxTotal, StringFormat=C}" HorizontalAlignment="Right"/>
+                    </Grid>
+                    <Separator Margin="0,8"/>
+                    <Grid Margin="0,0,0,16">
+                        <TextBlock Text="Total" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left"/>
+                        <TextBlock Text="{Binding GrandTotal, StringFormat=C}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Right"/>
+                    </Grid>
+
+                    <StackPanel Visibility="{Binding IsPaymentPanelOpen, Converter={StaticResource BoolToCollapsedConverter}, ConverterParameter=Inverse}">
+                        <Button Content="Clear Cart" Command="{Binding ClearCartCommand}" HorizontalAlignment="Stretch" Padding="5"/>
+                        <Button Content="Checkout" Command="{Binding StartPaymentCommand}" HorizontalAlignment="Stretch" Padding="5"/>
+                    </StackPanel>
+
+                    <StackPanel Visibility="{Binding IsPaymentPanelOpen, Converter={StaticResource BoolToCollapsedConverter}}">
+                        <TextBlock Text="Payment Method" FontWeight="SemiBold" Margin="0,8,0,4"/>
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <RadioButton Content="Cash" GroupName="Payment" Margin="0,0,16,0" FontSize="16"
+                                         IsChecked="{Binding SelectedPaymentMethod, Converter={StaticResource PaymentMethodConverter}, ConverterParameter=Cash}"/>
+                            <RadioButton Content="Card" GroupName="Payment" FontSize="16"
+                                         IsChecked="{Binding SelectedPaymentMethod, Converter={StaticResource PaymentMethodConverter}, ConverterParameter=Card}"/>
+                        </StackPanel>
+
+                        <StackPanel Visibility="{Binding SelectedPaymentMethod, Converter={StaticResource PaymentMethodVisibilityConverter}}">
+                            <TextBlock Text="Amount Tendered" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding AmountTenderedInput, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock Text="{Binding ChangeDuePreview}" Margin="0,6,0,0" FontSize="16" FontWeight="SemiBold"/>
+                        </StackPanel>
+
+                        <Button Content="Confirm Payment" Command="{Binding CompleteSaleCommand}" Margin="0,16,0,4" HorizontalAlignment="Stretch" Padding="5"/>
+                        <Button Content="Cancel" Command="{Binding CancelPaymentCommand}" HorizontalAlignment="Stretch" Padding="5"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+
         </Grid>
     </Grid>
 </UserControl>

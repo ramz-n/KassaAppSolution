@@ -45,11 +45,11 @@
 
                 <Border Grid.Row="1" Background="#FFF3CD" CornerRadius="8" Padding="10" Margin="0,10,0,0">
                     <StackPanel>
-                        <TextBlock Text="Low Stock Alert" FontWeight="Bold" Margin="0,0,0,6"/>
+                        <TextBlock Text="Low Stock Alert" FontWeight="Bold" Margin="0,0,0,6" Foreground="Red"/>
                         <ItemsControl ItemsSource="{Binding LowStockProducts}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <TextBlock><Run Text="{Binding ProductName, Mode=OneWay}"/><Run Text=" "/><Run Text=" - "/><Run Text=" "/><Run Text="{Binding StockQty, Mode=OneWay}"/><Run Text=" "/><Run Text=" left"/></TextBlock>
+                                    <TextBlock Foreground="Red"><Run Text="{Binding ProductName, Mode=OneWay}"/><Run Text=" "/><Run Text=" - "/><Run Text=" "/><Run Text="{Binding StockQty, Mode=OneWay}"/><Run Text=" "/><Run Text=" left"/></TextBlock>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -73,13 +73,16 @@
                     <TextBlock Text="Tax rate (e.g. 0.13 = 13%)"/>
                     <TextBox Text="{Binding EditTax}" Margin="0,2,0,10" Padding="6"/>
 
+                    <TextBlock Text="Unit Type"/>
+                    <ComboBox ItemsSource="{Binding UnitTypes}" SelectedItem="{Binding EditUnitType}" Margin="0,2,0,10" Padding="6"/>
+
                     <TextBlock Text="Stock Quantity"/>
                     <TextBox Text="{Binding EditStock}" Margin="0,2,0,10" Padding="6"/>
 
                     <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" TextWrapping="Wrap" Margin="0,0,0,10"/>
 
-                    <Button Content="New Product" Command="{Binding NewProductCommand}" HorizontalAlignment="Stretch"/>
-                    <Button Content="Save" Command="{Binding SaveCommand}" HorizontalAlignment="Stretch"/>
+                    <Button Content="New Product" Command="{Binding NewProductCommand}" HorizontalAlignment="Stretch" Padding="5"/>
+                    <Button Content="Save" Command="{Binding SaveCommand}" HorizontalAlignment="Stretch" Padding="5"/>
                 </StackPanel>
             </Border>
 
