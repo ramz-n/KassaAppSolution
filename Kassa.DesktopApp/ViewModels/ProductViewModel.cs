@@ -1,6 +1,7 @@
 ﻿using Kassa.Application.Interfaces;
 using Kassa.DesktopApp.Common;
 using Kassa.Domain.Entities;
+using Kassa.Domain.Enums;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
@@ -24,6 +25,7 @@ namespace Kassa.DesktopApp.ViewModels
         private Product? _selectedProduct;
         public RelayCommand NewProductCommand { get; }
         public RelayCommand BackCommand { get; }
+        public RelayCommandAsync SaveCommand { get; }
 
 
         public event EventHandler? BackRequested;
@@ -119,12 +121,26 @@ namespace Kassa.DesktopApp.ViewModels
             }
         }
 
+        public UnitType[] UnitTypes { get; } = Enum.GetValues<UnitType>();
+        private UnitType _editUnitType = UnitType.Piece;
+        public UnitType EditUnitType { 
+            get => _editUnitType;
+            set
+            {
+                if (_editUnitType != value)
+                {
+                    _editUnitType = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public ProductViewModel(IProductRepository productRepository)
         {
             _productRepository = productRepository;
             NewProductCommand = new RelayCommand(() => SelectedProduct = null);
             BackCommand = new RelayCommand(() => BackRequested?.Invoke(this, EventArgs.Empty));
+            SaveCommand = new RelayCommandAsync(SaveProductAsync);
         }
 
         
@@ -153,8 +169,67 @@ namespace Kassa.DesktopApp.ViewModels
             EditBarcode = p?.Barcode ?? string.Empty;
             EditName = p?.ProductName ?? string.Empty;
             EditPrice = (p?.Price ?? 0m).ToString("0.00");
-            EditTax = (p?.Tax ?? 0.21m).ToString("0.00");
+            EditTax = (p?.Tax ?? 0.13m).ToString("0.00");
             EditStock = (p?.StockQty ?? 0m).ToString("0.###");
+            EditUnitType = p?.UnitType ?? UnitType.Piece;
+        }
+
+        private async Task SaveProductAsync()
+        {
+            if (string.IsNullOrWhiteSpace(EditBarcode) || string.IsNullOrWhiteSpace(EditName))
+            {
+                ErrorMessage = "Product barcode and name are required.";
+                return;
+            }
+            if (!decimal.TryParse(EditPrice, out var price) || price < 0)
+            {
+                ErrorMessage = "Price must be a non-negative number.";
+                return;
+            }
+            if (!decimal.TryParse(EditTax, out var taxRate) || taxRate < 0)
+            {
+                ErrorMessage = "Tax rate must be a non-negative number (e.g. 0.13 for 13%).";
+                return;
+            }
+            if (!decimal.TryParse(EditStock, out var stock) || stock < 0)
+            {
+                ErrorMessage = "Stock must be a non-negative number.";
+                return;
+            }
+
+            if (SelectedProduct is null)
+            {
+                var existing = await _productRepository.GetProductByBarcodeAsync(EditBarcode);
+                if (existing != null)
+                {
+                    ErrorMessage = "A product with this barcode already exists.";
+                    return;
+                }
+
+                var product = new Product
+                {
+                    Barcode = EditBarcode,
+                    ProductName = EditName,
+                    Price = price,
+                    Tax = taxRate,
+                    StockQty = stock,
+                    UnitType = EditUnitType,
+                };
+                await _productRepository.AddProductAsync(product);
+            }
+            else
+            {
+                SelectedProduct.ProductName = EditName;
+                SelectedProduct.Price = price;
+                SelectedProduct.Tax = taxRate;
+                SelectedProduct.StockQty = stock;
+                SelectedProduct.UnitType = EditUnitType;
+                await _productRepository.UpdateProductAsync(SelectedProduct);
+            }
+
+            ErrorMessage = null;
+            await LoadAsync();
+            SelectedProduct = null;
         }
 
         protected void OnPropertyChanged([CallerMemberName] string? propertyName = null)

@@ -23,6 +23,9 @@ namespace Kassa.DesktopApp.ViewModels
         public RelayCommandAsync OpenKassaCommand { get; }
         public RelayCommandAsync CloseKassaCommand { get; }
         public RelayCommand RemoveScannedItemCommand { get; }
+        public RelayCommand ClearCartCommand { get; }
+        public RelayCommand StartPaymentCommand { get; }
+        public RelayCommand CancelPaymentCommand { get; }
 
         public event EventHandler? LogoutRequested;
         public event EventHandler? OpenProductsRequested;
@@ -64,6 +67,32 @@ namespace Kassa.DesktopApp.ViewModels
                 if (_barcodeInput != value)
                 {
                     _barcodeInput = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private bool _isPaymentPanelOpen;
+        public bool IsPaymentPanelOpen { 
+            get => _isPaymentPanelOpen;
+            set
+            {
+                if(_isPaymentPanelOpen != value)
+                {
+                    _isPaymentPanelOpen = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
+
+        private PaymentMethod _selectedPaymentMethod = PaymentMethod.Cash;
+        public PaymentMethod SelectedPaymentMethod { 
+            get => _selectedPaymentMethod;
+            set
+            {
+                if (value != _selectedPaymentMethod)
+                {
+                    _selectedPaymentMethod = value;
                     OnPropertyChanged();
                 }
             }
@@ -147,6 +176,9 @@ namespace Kassa.DesktopApp.ViewModels
             _cart = cartService;
 
             ScanBarcodeCommand = new RelayCommandAsync(ScanBarcodeAsync);
+            ClearCartCommand = new RelayCommand(() => { _cart.Clear(); RefreshCart(); });
+            StartPaymentCommand = new RelayCommand(() => IsPaymentPanelOpen = true, () => CartScannedItems.Count > 0);
+            CancelPaymentCommand = new RelayCommand(() => IsPaymentPanelOpen = false);
             RemoveScannedItemCommand = new RelayCommand(p => RemoveScannedItem(p as CartScannedItemViewModel));
             LogoutCommand = new RelayCommand(() => LogoutRequested?.Invoke(this, EventArgs.Empty));
             OpenProductsCommand = new RelayCommand(() => OpenProductsRequested?.Invoke(this, EventArgs.Empty));
@@ -232,6 +264,7 @@ namespace Kassa.DesktopApp.ViewModels
         {
             if (scannedProduct is null) return;
             _cart.RemoveScannedItem(scannedProduct.Model);
+            RefreshCart() ;
         }
         protected virtual void OnPropertyChanged([CallerMemberName] string? propertyName = null)
         {
