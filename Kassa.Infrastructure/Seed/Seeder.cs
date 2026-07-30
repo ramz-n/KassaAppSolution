@@ -12,9 +12,12 @@ namespace Kassa.Infrastructure.Seed
             {
                 var products = new List<Product>()
                 {
-                   new() {Id=1, ProductName="Coffee", Price=500, Barcode="8710400001011"  },
-                   new() {Id=2, ProductName="Milk", Price=200, Barcode="8710400001022"  },
-                   new() {Id=3, ProductName="Tea", Price=60, Barcode="8710400001011"  },
+                   new() {Id=1, ProductName="Coffee", Price=500, Barcode="8710400001011", StockQty=10  },
+                   new() {Id=2, ProductName="Milk", Price=200, Barcode="8710400001022", StockQty=23  },
+                   new() {Id=3, ProductName="Tea", Price=60, Barcode="8710400001011", StockQty=3  },
+                   new() {Id=4, ProductName="Brownie", Price=100, Barcode="8710400001011", StockQty=8  },
+                   new() {Id=5, ProductName="Muffin", Price=120, Barcode="8710400001011", StockQty=2  },
+                   new() {Id=6, ProductName="Chiya", Price=50, Barcode="8710400001011", StockQty=20  },
                 };
                 context.Products.AddRange(products);     
             }
