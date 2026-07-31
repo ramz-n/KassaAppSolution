@@ -1,5 +1,6 @@
 ﻿using Kassa.Application.Cart;
 using Kassa.Application.Interfaces;
+using Kassa.Application.Services;
 using Kassa.DesktopApp.Common;
 using Kassa.Domain.Entities;
 using Kassa.Domain.Enums;
@@ -14,6 +15,7 @@ namespace Kassa.DesktopApp.ViewModels
         private readonly IProductRepository _productRepository;
         private readonly IKassaSessionRepository _kassSessionRepository;
         private readonly ICartService _cart;
+        private readonly ICheckoutService _checkoutService;
         public Cashier CurrentCashier { get; private set; } = null!;
         public KassaSession? OpenSession { get; private set; }
 
@@ -26,9 +28,12 @@ namespace Kassa.DesktopApp.ViewModels
         public RelayCommand ClearCartCommand { get; }
         public RelayCommand StartPaymentCommand { get; }
         public RelayCommand CancelPaymentCommand { get; }
+        public RelayCommandAsync CompleteSaleCommand { get; }
+
 
         public event EventHandler? LogoutRequested;
         public event EventHandler? OpenProductsRequested;
+        public event EventHandler<Transaction>? SaleCompleted;
 
         private string? _statusMessage;
         public string? StatusMessage
@@ -137,13 +142,13 @@ namespace Kassa.DesktopApp.ViewModels
                 }
             }
         }
-        private string _amountTenderedInput = string.Empty;
-        public string AmountTenderedInput { 
-            get => _amountTenderedInput; 
+        private string _amountReceived = string.Empty;
+        public string AmountReceived { 
+            get => _amountReceived; 
             set {
-                if (_amountTenderedInput != value)
+                if (_amountReceived != value)
                 {
-                    _amountTenderedInput = value;
+                    _amountReceived = value;
                     OnPropertyChanged();
                 }
             }
@@ -154,9 +159,9 @@ namespace Kassa.DesktopApp.ViewModels
         {
             get
             {
-                if (decimal.TryParse(AmountTenderedInput, out var tendered))
+                if (decimal.TryParse(AmountReceived, out var received))
                 {
-                    var change = tendered - GrandTotal;
+                    var change = received - GrandTotal;
                     return change >= 0 ? $"Change: {change:C}" : "Insufficient amount";
                 }
                 return string.Empty;
@@ -169,16 +174,18 @@ namespace Kassa.DesktopApp.ViewModels
             _ = LoadOpenSessionAsync();
         }
 
-        public CheckoutViewModel(IProductRepository productRepository, IKassaSessionRepository kassaSessionRepository, ICartService cartService)
+        public CheckoutViewModel(IProductRepository productRepository, IKassaSessionRepository kassaSessionRepository, ICartService cartService, ICheckoutService checkoutService)
         {
             _productRepository = productRepository;
             _kassSessionRepository = kassaSessionRepository;
             _cart = cartService;
+            _checkoutService = checkoutService;
 
             ScanBarcodeCommand = new RelayCommandAsync(ScanBarcodeAsync);
             ClearCartCommand = new RelayCommand(() => { _cart.Clear(); RefreshCart(); });
             StartPaymentCommand = new RelayCommand(() => IsPaymentPanelOpen = true, () => CartScannedItems.Count > 0);
             CancelPaymentCommand = new RelayCommand(() => IsPaymentPanelOpen = false);
+            CompleteSaleCommand = new RelayCommandAsync(CompleteSaleAsync);
             RemoveScannedItemCommand = new RelayCommand(p => RemoveScannedItem(p as CartScannedItemViewModel));
             LogoutCommand = new RelayCommand(() => LogoutRequested?.Invoke(this, EventArgs.Empty));
             OpenProductsCommand = new RelayCommand(() => OpenProductsRequested?.Invoke(this, EventArgs.Empty));
@@ -289,6 +296,37 @@ namespace Kassa.DesktopApp.ViewModels
             TaxTotal = summary.TaxTotal;
             GrandTotal = summary.GrandTotal;
             OnPropertyChanged(nameof(ChangeDuePreview));
+        }
+
+        private async Task CompleteSaleAsync()
+        {
+            decimal? amountTendered = null;
+            if (SelectedPaymentMethod == PaymentMethod.Cash)
+            {
+                if (!decimal.TryParse(AmountReceived, out var received) || received < GrandTotal)
+                {
+                    StatusMessage = "Enter an amount received that covers the total.";
+                    IsError = true;
+                    return;
+                }
+                amountTendered = received;
+            }
+
+            var result = await _checkoutService.CompleteSaleAsync(_cart, CurrentCashier.Id, SelectedPaymentMethod, amountTendered);
+
+            if (!result.Success)
+            {
+                StatusMessage = result.ErrorMessage;
+                IsError = true;
+                return;
+            }
+
+            StatusMessage = $"Sale completed. Receipt {result.Transaction!.ReceiptNumber}.";
+            IsError = false;
+            IsPaymentPanelOpen = false;
+            AmountReceived = string.Empty;
+            RefreshCart();
+            SaleCompleted?.Invoke(this, result.Transaction);
         }
     }
 }
