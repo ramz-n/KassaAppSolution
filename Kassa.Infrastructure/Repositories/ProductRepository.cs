@@ -23,6 +23,11 @@ namespace Kassa.Infrastructure.Repositories
             return _context.Products.FirstOrDefaultAsync(p => p.Barcode == barcode);
         }
 
+        public Task<Product?> GetProductByIdAsync(int id)
+        {
+            return _context.Products.FirstOrDefaultAsync(p => p.Id == id);
+        }
+
         public Task<List<Product>> SearchProductByNameAsync(string search)
         {
             return _context.Products
@@ -49,6 +54,25 @@ namespace Kassa.Infrastructure.Repositories
         {
             _context.Products.Update(product);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> TryDecrementStockAsync(int productId, decimal quantity, byte[] rowVersion)
+        {
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == productId);
+            if (product is null) return false;
+            if (product.StockQty < quantity) return false;
+
+            product.StockQty -= quantity;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return false;
+            }
         }
     }
 }
