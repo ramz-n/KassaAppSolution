@@ -7,7 +7,7 @@ namespace Kassa.Application.Interfaces
 {
     public interface ITransactionRepository
     {
-        Task AddAsync(Transaction transaction);
+        Task AddTransactionAsync(Transaction transaction);
         Task<int> CountForDateAsync(DateOnly date);
     }
 }
