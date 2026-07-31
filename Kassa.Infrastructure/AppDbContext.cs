@@ -11,6 +11,7 @@ namespace Kassa.Infrastructure
         public DbSet<Product> Products => Set<Product>();
         public DbSet<Cashier> Cashiers => Set<Cashier>();
         public DbSet<KassaSession> KassaSessions => Set<KassaSession>();
+        public DbSet<Transaction> Transactions => Set<Transaction>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,6 +30,15 @@ namespace Kassa.Infrastructure
                 e.HasOne(s => s.Cashier)
                     .WithMany()
                     .HasForeignKey(s => s.CashierId);
+            });
+
+            modelBuilder.Entity<Transaction>(e =>
+            {
+                e.Property(t => t.Timestamp)
+                .HasConversion(
+                    v => v.ToUniversalTime(),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
+                );
             });
         }
     }
