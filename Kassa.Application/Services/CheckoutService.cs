@@ -66,7 +66,7 @@ namespace Kassa.Application.Services
                 var taxAmount = _taxCalculator.CalculateTaxPortion(scannedItem.NetTotal, scannedItem.Tax);
             }
 
-            await _transactionRepository.AddAsync(transaction);
+            await _transactionRepository.AddTransactionAsync(transaction);
             cart.Clear();
 
             return new CheckoutResult(true, transaction, null);
