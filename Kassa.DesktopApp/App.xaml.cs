@@ -52,8 +52,11 @@ namespace Kassa.DesktopApp
                     services.AddScoped<IProductRepository, ProductRepository>();
                     services.AddScoped<ICashierRepository, CashierRepository>();
                     services.AddScoped<IKassaSessionRepository, KassaSessionRepository>();
+                    services.AddScoped<ITransactionRepository, TransactionRepository>();
 
                     services.AddSingleton<ITaxCalculator, TaxCalculator>();
+                    services.AddScoped<IReceiptNumberGenerator, ReceiptNumberGenerator>();
+                    services.AddScoped<ICheckoutService, CheckoutService>();
 
                     services.AddTransient<ICartService, CartService>();
 
