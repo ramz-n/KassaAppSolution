@@ -79,4 +79,17 @@ namespace Kassa.DesktopApp.Converters
         public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
             throw new NotSupportedException();
     }
+
+    public class NullToVisibilityConverter : IValueConverter
+    {
+        public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            var isNull = value is null;
+            if (string.Equals(parameter as string, "Inverse", StringComparison.OrdinalIgnoreCase)) isNull = !isNull;
+            return isNull ? Visibility.Collapsed : Visibility.Visible;
+        }
+
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+            throw new NotSupportedException();
+    }
 }
