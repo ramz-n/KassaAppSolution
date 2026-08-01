@@ -9,5 +9,8 @@ namespace Kassa.Application.Interfaces
     {
         Task AddTransactionAsync(Transaction transaction);
         Task<int> CountForDateAsync(DateOnly date);
+        Task<List<Transaction>> GetByDateRangeAsync(DateTime from, DateTime to, int? cashierId = null);
+        Task<Transaction?> GetByIdWithLinesAsync(int id);
+        Task<decimal> SumCashSalesAsync(DateTime from, DateTime to, int cashierId);
     }
 }
