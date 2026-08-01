@@ -73,7 +73,7 @@
                         <DataGridTemplateColumn Header="" Width="80">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="Remove" Padding="6,2"
+                                    <Button Content="Remove" Padding="6"
                                             Command="{Binding DataContext.RemoveScannedItemCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
                                             CommandParameter="{Binding}"/>
                                 </DataTemplate>
@@ -103,7 +103,7 @@
 
                     <StackPanel Visibility="{Binding IsPaymentPanelOpen, Converter={StaticResource BoolToCollapsedConverter}, ConverterParameter=Inverse}">
                         <Button Content="Clear Cart" Command="{Binding ClearCartCommand}" HorizontalAlignment="Stretch" Padding="5"/>
-                        <Button Content="Checkout" Command="{Binding StartPaymentCommand}" HorizontalAlignment="Stretch" Padding="5"/>
+                        <Button Content="Checkout" Command="{Binding StartPaymentCommand}" HorizontalAlignment="Stretch" Padding="5" Background="Green" Foreground="White"/>
                     </StackPanel>
 
                     <StackPanel Visibility="{Binding IsPaymentPanelOpen, Converter={StaticResource BoolToCollapsedConverter}}">
@@ -116,13 +116,13 @@
                         </StackPanel>
 
                         <StackPanel Visibility="{Binding SelectedPaymentMethod, Converter={StaticResource PaymentMethodVisibilityConverter}}">
-                            <TextBlock Text="Amount Tendered" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                            <TextBox Text="{Binding AmountTenderedInput, UpdateSourceTrigger=PropertyChanged}"/>
+                            <TextBlock Text="Amount Received" FontWeight="SemiBold" Margin="0,0,0,4"/>
+                            <TextBox Text="{Binding AmountReceived, UpdateSourceTrigger=PropertyChanged}" Padding="5"/>
                             <TextBlock Text="{Binding ChangeDuePreview}" Margin="0,6,0,0" FontSize="16" FontWeight="SemiBold"/>
                         </StackPanel>
 
-                        <Button Content="Confirm Payment" Command="{Binding CompleteSaleCommand}" Margin="0,16,0,4" HorizontalAlignment="Stretch" Padding="5"/>
-                        <Button Content="Cancel" Command="{Binding CancelPaymentCommand}" HorizontalAlignment="Stretch" Padding="5"/>
+                        <Button Content="Confirm Payment" Command="{Binding CompleteSaleCommand}" Margin="0,16,0,4" HorizontalAlignment="Stretch" Padding="5" Background="Green"/>
+                        <Button Content="Cancel" Command="{Binding CancelPaymentCommand}" HorizontalAlignment="Stretch" Padding="5" Background="Red" Foreground="White"/>
                     </StackPanel>
                 </StackPanel>
             </Border>
