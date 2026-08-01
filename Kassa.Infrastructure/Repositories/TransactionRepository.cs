@@ -1,5 +1,6 @@
 ﻿using Kassa.Application.Interfaces;
 using Kassa.Domain.Entities;
+using Kassa.Domain.Enums;
 using Microsoft.EntityFrameworkCore;
 
 namespace Kassa.Infrastructure.Repositories
@@ -26,6 +27,33 @@ namespace Kassa.Infrastructure.Repositories
             var start = DateTime.SpecifyKind(localStart, DateTimeKind.Utc);
             var end = start.AddDays(1);
             return _context.Transactions.CountAsync(t => t.Timestamp >= start && t.Timestamp < end);
+        }
+
+        public Task<List<Transaction>> GetByDateRangeAsync(DateTime from, DateTime to, int? cashierId = null)
+        {
+            return _context.Transactions
+                .Include(t => t.Cashier)
+                .Where(t => t.Timestamp >= from && t.Timestamp <= to )
+                .Where(t => cashierId == null || t.CashierId == cashierId)
+                .OrderByDescending(t => t.Timestamp)
+                .ToListAsync();
+        }
+
+        public Task<Transaction?> GetByIdWithLinesAsync(int id)
+        {
+            return _context.Transactions.Include(t => t.Cashier)
+                .Include(t => t.Lines)
+                .FirstOrDefaultAsync(t => t.Id == id);
+        }
+
+        public async Task<decimal> SumCashSalesAsync(DateTime from, DateTime to, int cashierId)
+        {
+            var sum = await _context.Transactions
+            .Where(t => t.Timestamp >= from && t.Timestamp <= to
+                        && t.CashierId == cashierId
+                        && t.PaymentMethod == PaymentMethod.Cash)
+            .SumAsync(t => (decimal?)t.Total);
+            return sum ?? 0m;
         }
     }
 }

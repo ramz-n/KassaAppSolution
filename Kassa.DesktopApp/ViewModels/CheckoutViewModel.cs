@@ -2,11 +2,13 @@
 using Kassa.Application.Interfaces;
 using Kassa.Application.Services;
 using Kassa.DesktopApp.Common;
+using Kassa.DesktopApp.Services;
 using Kassa.Domain.Entities;
 using Kassa.Domain.Enums;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows.Media.Imaging;
 
 namespace Kassa.DesktopApp.ViewModels
 {
@@ -16,6 +18,8 @@ namespace Kassa.DesktopApp.ViewModels
         private readonly IKassaSessionRepository _kassSessionRepository;
         private readonly ICartService _cart;
         private readonly ICheckoutService _checkoutService;
+        private readonly ITransactionRepository _transactionRepository;
+        private readonly IEsewaPaymentService _esewaPaymentService;
         public Cashier CurrentCashier { get; private set; } = null!;
         public KassaSession? OpenSession { get; private set; }
 
@@ -100,6 +104,13 @@ namespace Kassa.DesktopApp.ViewModels
                     _selectedPaymentMethod = value;
                     OnPropertyChanged();
                 }
+                if(value == PaymentMethod.Esewa)
+                {
+                    RefreshEsewaQr();
+                } else
+                {
+                    EsewaQrcode = null;
+                }
             }
         }
 
@@ -153,7 +164,19 @@ namespace Kassa.DesktopApp.ViewModels
                 }
             }
         }
-
+        private BitmapImage? _esewaQrcode;
+        public BitmapImage? EsewaQrcode
+        {
+            get => _esewaQrcode;
+            private set
+            {
+                if (_esewaQrcode != value)
+                {
+                    _esewaQrcode = value;
+                    OnPropertyChanged();
+                }
+            }
+        }
 
         public string ChangeDuePreview
         {
@@ -171,20 +194,28 @@ namespace Kassa.DesktopApp.ViewModels
         public void Initialize(Cashier cashier)
         {
             CurrentCashier = cashier;
+            _cart.Clear();
+            RefreshCart();
             _ = LoadOpenSessionAsync();
         }
 
-        public CheckoutViewModel(IProductRepository productRepository, IKassaSessionRepository kassaSessionRepository, ICartService cartService, ICheckoutService checkoutService)
+        private const string EsewaMerchantCode = "EPAYTEST";
+        public CheckoutViewModel(IProductRepository productRepository, IKassaSessionRepository kassaSessionRepository, ICartService cartService, ICheckoutService checkoutService, 
+            ITransactionRepository transactionRepository, IEsewaPaymentService esewaPaymentService)
         {
             _productRepository = productRepository;
             _kassSessionRepository = kassaSessionRepository;
             _cart = cartService;
             _checkoutService = checkoutService;
+            _transactionRepository = transactionRepository;
+            _esewaPaymentService = esewaPaymentService;
 
             ScanBarcodeCommand = new RelayCommandAsync(ScanBarcodeAsync);
             ClearCartCommand = new RelayCommand(() => { _cart.Clear(); RefreshCart(); });
-            StartPaymentCommand = new RelayCommand(() => IsPaymentPanelOpen = true, () => CartScannedItems.Count > 0);
-            CancelPaymentCommand = new RelayCommand(() => IsPaymentPanelOpen = false);
+            StartPaymentCommand = new RelayCommand(
+                () => { IsPaymentPanelOpen = true; if (SelectedPaymentMethod == PaymentMethod.Esewa) RefreshEsewaQr(); },
+                () => CartScannedItems.Count > 0);
+            CancelPaymentCommand = new RelayCommand(ResetPaymentPanel);
             CompleteSaleCommand = new RelayCommandAsync(CompleteSaleAsync);
             RemoveScannedItemCommand = new RelayCommand(p => RemoveScannedItem(p as CartScannedItemViewModel));
             LogoutCommand = new RelayCommand(() => LogoutRequested?.Invoke(this, EventArgs.Empty));
@@ -221,7 +252,8 @@ namespace Kassa.DesktopApp.ViewModels
         {
             if (OpenSession is null) return;
 
-            OpenSession.ExpectedCash = OpenSession.StartingCash + 1000.00m;
+            var cashSales = await _transactionRepository.SumCashSalesAsync(OpenSession.OpenedAt, DateTime.UtcNow, CurrentCashier.Id);
+            OpenSession.ExpectedCash = OpenSession.StartingCash + cashSales;
             OpenSession.CountedCash = OpenSession.ExpectedCash;
             OpenSession.CashDifference = OpenSession.CountedCash - OpenSession.ExpectedCash;
             OpenSession.ClosedAt = DateTime.UtcNow;
@@ -259,7 +291,6 @@ namespace Kassa.DesktopApp.ViewModels
                 return;
             }
 
-            // Implement add to cart later 
             var qty = product.UnitType == UnitType.Weight ? 0.5m : 1m;
             _cart.AddProduct(product, qty);
             RefreshCart();
@@ -285,8 +316,7 @@ namespace Kassa.DesktopApp.ViewModels
                 CartScannedItems.Add(new CartScannedItemViewModel(line, RecalculateTotals));
 
             RecalculateTotals();
-
-            //Add payment functionality later
+            StartPaymentCommand.RaiseCanExecuteChanged();
         }
 
         private void RecalculateTotals()
@@ -296,6 +326,32 @@ namespace Kassa.DesktopApp.ViewModels
             TaxTotal = summary.TaxTotal;
             GrandTotal = summary.GrandTotal;
             OnPropertyChanged(nameof(ChangeDuePreview));
+            StartPaymentCommand.RaiseCanExecuteChanged();
+
+            if (IsPaymentPanelOpen && SelectedPaymentMethod == PaymentMethod.Esewa)
+            {
+                RefreshEsewaQr();
+            }
+        }
+
+        private void RefreshEsewaQr()
+        {
+            if (GrandTotal <= 0)
+            {
+                EsewaQrcode = null;
+                return;
+            }
+
+            var previewReference = $"{CurrentCashier.Id}-{DateTime.Now:yyyyMMddHHmmss}";
+            var payload = _esewaPaymentService.BuildPaymentPayload(EsewaMerchantCode, GrandTotal,  previewReference);
+            EsewaQrcode = QrCodeImageBuilder.GeneratePng(payload);
+        }
+
+        private void ResetPaymentPanel()
+        {
+            IsPaymentPanelOpen = false;
+            AmountReceived = string.Empty;
+            SelectedPaymentMethod = PaymentMethod.Cash;
         }
 
         private async Task CompleteSaleAsync()
@@ -323,8 +379,7 @@ namespace Kassa.DesktopApp.ViewModels
 
             StatusMessage = $"Sale completed. Receipt {result.Transaction!.ReceiptNumber}.";
             IsError = false;
-            IsPaymentPanelOpen = false;
-            AmountReceived = string.Empty;
+            ResetPaymentPanel();
             RefreshCart();
             SaleCompleted?.Invoke(this, result.Transaction);
         }

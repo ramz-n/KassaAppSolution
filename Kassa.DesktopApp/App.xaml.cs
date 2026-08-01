@@ -57,6 +57,7 @@ namespace Kassa.DesktopApp
                     services.AddSingleton<ITaxCalculator, TaxCalculator>();
                     services.AddScoped<IReceiptNumberGenerator, ReceiptNumberGenerator>();
                     services.AddScoped<ICheckoutService, CheckoutService>();
+                    services.AddSingleton<IEsewaPaymentService, EsewaPaymentService>();
 
                     services.AddTransient<ICartService, CartService>();
 
