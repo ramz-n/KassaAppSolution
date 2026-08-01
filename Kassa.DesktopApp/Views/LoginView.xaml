@@ -4,13 +4,13 @@
     <Grid Background="Black">
         <Border Background="White" Padding="200">
             <StackPanel VerticalAlignment="Center">
-                <TextBlock Text="Kassa App" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
+                <TextBlock Text="QRCoders - Kassa App" FontSize="24" FontWeight="Bold" HorizontalAlignment="Center"/>
                 <TextBlock Text="Select your name and enter your PINCODE" HorizontalAlignment="Center"/>
 
                 <TextBlock Text="Cashier" FontWeight="SemiBold"/>
                 <ComboBox ItemsSource="{Binding Cashiers}" SelectedItem="{Binding SelectedCashier}"
                           DisplayMemberPath="Name" FontSize="16" Padding="6" Margin="0,0,0,12"/>
-                
+
                 <TextBlock Text="PINCODE" FontWeight="SemiBold"/>
                 <PasswordBox x:Name="PinBox" FontSize="20" Padding="6" PasswordChanged="PinBox_PasswordChanged" MaxLength="4"/>
 
@@ -23,7 +23,6 @@
                 <TextBlock Text="For example PINCode: Qaium = 1234"
                            FontSize="11" Foreground="Gray" Margin="0,16,0,0"
                            HorizontalAlignment="Center"/>
-
             </StackPanel>
         </Border>
     </Grid>

@@ -1,4 +1,5 @@
 ﻿using Kassa.DesktopApp.ViewModels;
+using Kassa.Domain.Entities;
 using System.Windows.Controls;
 
 namespace Kassa.DesktopApp.Views
@@ -8,6 +9,12 @@ namespace Kassa.DesktopApp.Views
         public CheckoutView()
         {
             InitializeComponent();
+            DataContextChanged += (_, e) =>
+            {
+                if (e.OldValue is CheckoutViewModel oldVm) oldVm.SaleCompleted -= OnSaleCompleted;
+                if (e.NewValue is CheckoutViewModel newVm) newVm.SaleCompleted += OnSaleCompleted;
+            };
+            Loaded += (_, _) => BarcodeBox.Focus();
         }
 
         private void BarcodeBox_KeyDown(object sender, System.Windows.Input.KeyEventArgs e)
@@ -16,6 +23,14 @@ namespace Kassa.DesktopApp.Views
             {
                 vm.ScanBarcodeCommand.Execute(null);
             }
+        }
+
+        private void OnSaleCompleted(object? sender, Transaction transaction)
+        {
+            var receiptWindow = new ReceiptWindow(transaction);
+            receiptWindow.Owner = System.Windows.Window.GetWindow(this);
+            receiptWindow.ShowDialog();
+            BarcodeBox.Focus();
         }
     }
 }
