@@ -6,12 +6,11 @@ namespace Kassa.Application.Services
     {
         public string BuildPaymentPayload(string merchantCode, decimal amount, string receiptNumber)
         {
-            var amountStr = amount.ToString("F2", CultureInfo.InvariantCulture);
 
             return "{"
                 + $"\"merchantCode\":\"{merchantCode}\","
                 + $"\"referenceId\":\"{receiptNumber}\","
-                + $"\"amount\":\"{amountStr}\","
+                + $"\"amount\":\"{amount}\","
                 + "\"currency\":\"NPR\""
                 + "}";
         }

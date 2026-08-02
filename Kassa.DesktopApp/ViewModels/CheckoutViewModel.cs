@@ -33,6 +33,8 @@ namespace Kassa.DesktopApp.ViewModels
         public RelayCommand StartPaymentCommand { get; }
         public RelayCommand CancelPaymentCommand { get; }
         public RelayCommandAsync CompleteSaleCommand { get; }
+        public RelayCommand IncreaseQtyCommand { get; }
+        public RelayCommand DecreaseQtyCommand { get; }
 
 
         public event EventHandler? LogoutRequested;
@@ -160,7 +162,7 @@ namespace Kassa.DesktopApp.ViewModels
                 if (_amountReceived != value)
                 {
                     _amountReceived = value;
-                    OnPropertyChanged();
+                    OnPropertyChanged(nameof(ChangeDuePreview));
                 }
             }
         }
@@ -185,7 +187,7 @@ namespace Kassa.DesktopApp.ViewModels
                 if (decimal.TryParse(AmountReceived, out var received))
                 {
                     var change = received - GrandTotal;
-                    return change >= 0 ? $"Change: {change:C}" : "Insufficient amount";
+                    return change >= 0 ? $"Change:  {String.Format("{0,10:'Rs.'0.00}", change)}" : "Insufficient amount";
                 }
                 return string.Empty;
             }
@@ -222,6 +224,9 @@ namespace Kassa.DesktopApp.ViewModels
             OpenProductsCommand = new RelayCommand(() => OpenProductsRequested?.Invoke(this, EventArgs.Empty));
             OpenKassaCommand = new RelayCommandAsync(OpenKassaAsync);
             CloseKassaCommand = new RelayCommandAsync(CloseKassaAsync);
+
+            IncreaseQtyCommand = new RelayCommand(p => IncreaseQty(p as CartScannedItemViewModel));
+            DecreaseQtyCommand = new RelayCommand(p => DecreaseQty(p as CartScannedItemViewModel));
         }
 
         private async Task LoadOpenSessionAsync()
@@ -382,6 +387,26 @@ namespace Kassa.DesktopApp.ViewModels
             ResetPaymentPanel();
             RefreshCart();
             SaleCompleted?.Invoke(this, result.Transaction);
+        }
+
+        private void IncreaseQty(CartScannedItemViewModel? item)
+        {
+            if (item is null) return;
+            item.Quantity++;
+        }
+
+        private void DecreaseQty(CartScannedItemViewModel? item)
+        {
+            if (item is null) return;
+            
+            if(item.Quantity >1)
+            {
+                item.Quantity--;
+            }
+            else
+            {
+                RemoveScannedItem(item);
+            }
         }
     }
 }
