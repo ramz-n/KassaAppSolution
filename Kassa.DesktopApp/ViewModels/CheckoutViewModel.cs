@@ -35,11 +35,13 @@ namespace Kassa.DesktopApp.ViewModels
         public RelayCommandAsync CompleteSaleCommand { get; }
         public RelayCommand IncreaseQtyCommand { get; }
         public RelayCommand DecreaseQtyCommand { get; }
+        public RelayCommand OpenSalesOverviewCommand { get; }
 
 
         public event EventHandler? LogoutRequested;
         public event EventHandler? OpenProductsRequested;
         public event EventHandler<Transaction>? SaleCompleted;
+        public event EventHandler? OpenSalesOverviewRequested;
 
         private string? _statusMessage;
         public string? StatusMessage
@@ -227,6 +229,8 @@ namespace Kassa.DesktopApp.ViewModels
 
             IncreaseQtyCommand = new RelayCommand(p => IncreaseQty(p as CartScannedItemViewModel));
             DecreaseQtyCommand = new RelayCommand(p => DecreaseQty(p as CartScannedItemViewModel));
+            OpenSalesOverviewCommand = new RelayCommand(() => OpenSalesOverviewRequested?.Invoke(this, EventArgs.Empty));
+
         }
 
         private async Task LoadOpenSessionAsync()
