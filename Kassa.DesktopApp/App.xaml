@@ -13,6 +13,8 @@
             <conv:BoolToCollapsedConverter x:Key="BoolToCollapsedConverter" />
             <conv:PaymentMethodConverter x:Key="PaymentMethodConverter" />
             <conv:NullToVisibilityConverter x:Key="NullToVisibilityConverter" />
+            <conv:ResourceKeyToBrushConverter x:Key="ResourceKeyToBrushConverter" />
+            <conv:CategoryEqualsConverter x:Key="CategoryEqualsConverter" />
         </ResourceDictionary>
     </Application.Resources>
 </Application>

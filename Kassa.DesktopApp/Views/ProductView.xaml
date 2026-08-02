@@ -1,93 +1,125 @@
 ﻿<UserControl
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="Kassa.DesktopApp.Views.ProductView"
-             d:DesignWidth="686.147">
-    <Grid Background="AntiqueWhite">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+             >
 
-        <Border Grid.Row="0" Background="#1B1F23" Padding="12">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="Product Management" Foreground="White" FontSize="18" VerticalAlignment="Center"/>
-                <Button Command="{Binding BackCommand}" Style="{StaticResource KassaButtonSecondary}" Grid.Column="1" Content="Back to Kassa" Padding="5"/>
-            </Grid>
+    <Grid Background="{StaticResource AppBackgroundBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="230"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="{StaticResource SidebarBackgroundBrush}">
+            <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="20,24,20,22">
+                    <Border Width="34" Height="34" CornerRadius="10" Background="{StaticResource PurpleGradientBrush}">
+                        <TextBlock Text="QR" FontWeight="Bold" FontSize="17" Foreground="White"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="KassaApp" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,0,0,20">
+                    <Button Content="Back to Checkout" Style="{StaticResource SidebarNavButton}"
+                            Command="{Binding BackCommand}" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Top">
+                    <Button Content="Checkout" Style="{StaticResource SidebarNavButton}"
+                            Command="{Binding BackCommand}" HorizontalAlignment="Stretch"/>
+                    <Button Content="Products" Style="{StaticResource SidebarNavButtonActive}" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+            </DockPanel>
         </Border>
 
-        <Grid Grid.Row="1" Margin="16">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="16"/>
-                <ColumnDefinition Width="1*"/>
-            </Grid.ColumnDefinitions>
+        <Grid Grid.Column="1" Margin="28,26,28,20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="*"/>
-                    <RowDefinition Height="180"/>
-                </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Margin="0,0,0,20">
+                <TextBlock Text="Product Management" Style="{StaticResource PageTitle}"/>
+                <TextBlock Text="Add, edit, and monitor stock for the catalog" Style="{StaticResource MutedText}" Margin="0,4,0,0"/>
+            </StackPanel>
 
-                <DataGrid Grid.Row="0" ItemsSource="{Binding Products}" SelectedItem="{Binding SelectedProduct}"
-                          AutoGenerateColumns="False" IsReadOnly="True" FontSize="14" RowHeight="34"
-                          ColumnHeaderStyle="{StaticResource KassaColumnHeaderStyle}"
-                            CellStyle="{StaticResource KassaCellStyle}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Barcode" Binding="{Binding Barcode}" Width="140"/>
-                        <DataGridTextColumn Header="Name" Binding="{Binding ProductName}" Width="*"/>
-                        <DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat=C}" Width="120"/>
-                        <DataGridTextColumn Header="Tax" Binding="{Binding Tax, StringFormat=P0}" Width="100"/>
-                        <DataGridTextColumn Header="Stock" Binding="{Binding StockQty}" Width="100"/>
-                    </DataGrid.Columns>
-                </DataGrid>
+            <Grid Grid.Row="1">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
 
-                <Border Grid.Row="1" Background="#FFF3CD" CornerRadius="8" Padding="10" Margin="0,10,0,0">
-                    <StackPanel>
-                        <TextBlock Text="Low Stock Alert" FontWeight="Bold" Margin="0,0,0,6" Foreground="Red"/>
-                        <ItemsControl ItemsSource="{Binding LowStockProducts}">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Foreground="Red"><Run Text="{Binding ProductName, Mode=OneWay}"/><Run Text=" "/><Run Text=" - "/><Run Text=" "/><Run Text="{Binding StockQty, Mode=OneWay}"/><Run Text=" "/><Run Text=" left"/></TextBlock>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                    </StackPanel>
+                <Grid Grid.Column="0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="180"/>
+                    </Grid.RowDefinitions>
+
+                    <Border Grid.Row="0" Style="{StaticResource Card}" Margin="0,0,0,16">
+                        <DataGrid ItemsSource="{Binding Products}" SelectedItem="{Binding SelectedProduct}"
+                                  AutoGenerateColumns="False" IsReadOnly="True" FontSize="13" RowHeight="38">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Barcode" Binding="{Binding Barcode}" Width="140"/>
+                                <DataGridTextColumn Header="Name" Binding="{Binding ProductName}" Width="*"/>
+                                <DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat=C}" Width="80"/>
+                                <DataGridTextColumn Header="Tax" Binding="{Binding Tax, StringFormat=P0}" Width="60"/>
+                                <DataGridTextColumn Header="Stock" Binding="{Binding StockQty}" Width="70"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Border>
+
+                    <Border Grid.Row="1" Background="#332B1A" CornerRadius="16" Padding="16">
+                        <StackPanel>
+                            <TextBlock Text="Low Stock Alert" FontWeight="Bold" Foreground="{StaticResource AccentAmberBrush}" Margin="0,0,0,8"/>
+                            <ItemsControl ItemsSource="{Binding LowStockProducts}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock FontSize="13" Margin="0,2,0,2">
+                                            <Run Text="{Binding Name, Mode=OneWay}"/>
+                                            <Run Text=" — "/>
+                                            <Run Text="{Binding StockQuantity, Mode=OneWay}"/>
+                                            <Run Text=" left"/>
+                                        </TextBlock>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </StackPanel>
+                    </Border>
+                </Grid>
+
+                <Border Grid.Column="2" Style="{StaticResource Card}">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel>
+                            <TextBlock Text="Product Details" Style="{StaticResource SectionTitle}" Margin="0,0,0,16"/>
+
+                            <TextBlock Text="Barcode" Style="{StaticResource MutedText}"/>
+                            <TextBox Style="{StaticResource KassaTextBox}" Text="{Binding EditBarcode}" Margin="0,4,0,12"/>
+
+                            <TextBlock Text="Name" Style="{StaticResource MutedText}"/>
+                            <TextBox Style="{StaticResource KassaTextBox}" Text="{Binding EditName}" Margin="0,4,0,12"/>
+
+                            <TextBlock Text="Price (tax included)" Style="{StaticResource MutedText}"/>
+                            <TextBox Style="{StaticResource KassaTextBox}" Text="{Binding EditPrice}" Margin="0,4,0,12"/>
+
+                            <TextBlock Text="Tax rate (e.g. 0.21 = 21%)" Style="{StaticResource MutedText}"/>
+                            <TextBox Style="{StaticResource KassaTextBox}" Text="{Binding EditTax}" Margin="0,4,0,12"/>
+
+                            <TextBlock Text="Unit Type" Style="{StaticResource MutedText}"/>
+                            <ComboBox ItemsSource="{Binding UnitTypes}" SelectedItem="{Binding EditUnitType}" Margin="0,4,0,12" Padding="10,8"/>
+
+                            <TextBlock Text="Stock Quantity" Style="{StaticResource MutedText}"/>
+                            <TextBox Style="{StaticResource KassaTextBox}" Text="{Binding EditStock}" Margin="0,4,0,14"/>
+
+                            <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource AccentRedBrush}" TextWrapping="Wrap" Margin="0,0,0,10"/>
+
+                            <Button Content="New Product" Style="{StaticResource PosButtonSecondary}" Command="{Binding NewProductCommand}" HorizontalAlignment="Stretch" Margin="0,0,0,8"/>
+                            <Button Content="Save" Style="{StaticResource PosButton}" Command="{Binding SaveCommand}" HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+                    </ScrollViewer>
                 </Border>
             </Grid>
-
-            <Border Grid.Column="2" Background="White" CornerRadius="10" Padding="20">
-                <StackPanel>
-                    <TextBlock Text="Product Details" FontSize="18" FontWeight="Bold" Margin="0,0,0,12"/>
-
-                    <TextBlock Text="Barcode"/>
-                    <TextBox Text="{Binding EditBarcode}" Margin="0,2,0,10" Padding="6"/>
-
-                    <TextBlock Text="Name"/>
-                    <TextBox Text="{Binding EditName}" Margin="0,2,0,10" Padding="6"/>
-
-                    <TextBlock Text="Price (tax included)"/>
-                    <TextBox Text="{Binding EditPrice}" Margin="0,2,0,10" Padding="6"/>
-
-                    <TextBlock Text="Tax rate (e.g. 0.13 = 13%)"/>
-                    <TextBox Text="{Binding EditTax}" Margin="0,2,0,10" Padding="6"/>
-
-                    <TextBlock Text="Unit Type"/>
-                    <ComboBox ItemsSource="{Binding UnitTypes}" SelectedItem="{Binding EditUnitType}" Margin="0,2,0,10" Padding="6"/>
-
-                    <TextBlock Text="Stock Quantity"/>
-                    <TextBox Text="{Binding EditStock}" Margin="0,2,0,10" Padding="6"/>
-
-                    <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" TextWrapping="Wrap" Margin="0,0,0,10"/>
-
-                    <Button Content="New Product" Style="{StaticResource KassaButtonSecondary}" Command="{Binding NewProductCommand}" HorizontalAlignment="Stretch" Padding="5"/>
-                    <Button Content="Save" Style="{StaticResource KassaButton}" Command="{Binding SaveCommand}" HorizontalAlignment="Stretch" Padding="5"/>
-                </StackPanel>
-            </Border>
-
         </Grid>
     </Grid>
+
 </UserControl>

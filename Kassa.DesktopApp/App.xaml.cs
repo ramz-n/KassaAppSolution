@@ -64,6 +64,7 @@ namespace Kassa.DesktopApp
                     services.AddTransient<ProductViewModel>();
                     services.AddTransient<LoginViewModel>();
                     services.AddTransient<CheckoutViewModel>();
+                    services.AddTransient<SalesOverviewViewModel>();
 
                     services.AddTransient<MainWindow>();
                 })

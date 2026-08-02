@@ -1,30 +1,52 @@
 ﻿<UserControl x:Class="Kassa.DesktopApp.Views.LoginView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" >
-    <Grid Background="Black">
-        <Border Background="White" CornerRadius="12" Width="420" Height="440"
-                HorizontalAlignment="Center" VerticalAlignment="Center" Padding="32">
+    <Grid Background="{StaticResource AppBackgroundBrush}">
+        <Ellipse Width="500" Height="500" Fill="{StaticResource AccentPurpleBrush}" Opacity="0.12"
+                  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="-260,-260,0,0"/>
+        <Ellipse Width="380" Height="380" Fill="{StaticResource AccentTealBrush}" Opacity="0.10"
+                  HorizontalAlignment="Center" VerticalAlignment="Center" Margin="280,180,0,0"/>
+        <Border Background="{StaticResource SurfaceBrush}" CornerRadius="20" Width="420"
+                HorizontalAlignment="Center" VerticalAlignment="Center" Padding="36">
             <StackPanel VerticalAlignment="Center">
-                <TextBlock Text="QRCoders - Kassa App" FontSize="26" FontWeight="Bold" Margin="0,0,0,4"
-                           HorizontalAlignment="Center"/>
-                <TextBlock Text="Select your name and enter your PINCODE" FontSize="14" Foreground="Gray"
-                           HorizontalAlignment="Center" Margin="0,0,0,20"/>
+                <Border Width="52" Height="52" CornerRadius="16" Background="{StaticResource PurpleGradientBrush}"
+                        HorizontalAlignment="Center" Margin="0,0,0,16">
+                    <TextBlock Text="QR" FontSize="24" FontWeight="Bold" Foreground="White"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+                <TextBlock Text="QRCoders - KassaApp" Style="{StaticResource PageTitle}" HorizontalAlignment="Center"/>
+                <TextBlock Text="Select your name and enter your PIN" Style="{StaticResource MutedText}"
+                           HorizontalAlignment="Center" Margin="0,4,0,28"/>
 
-                <TextBlock Text="Cashier" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                <ComboBox ItemsSource="{Binding Cashiers}" Style="{StaticResource KassaComboBox}" SelectedItem="{Binding SelectedCashier}"
-                          DisplayMemberPath="Name" FontSize="16" Padding="6" Margin="0,0,0,12"/>
+                <TextBlock Text="Cashier" Style="{StaticResource MutedText}" Margin="0,0,0,6"/>
+                <ComboBox  ItemsSource="{Binding Cashiers}" SelectedItem="{Binding SelectedCashier}" 
+                          FontSize="15" Padding="10,8" Margin="0,0,0,18">
+                    <ComboBox.ItemTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name}" 
+                       Foreground="Black" 
+                       Background="Transparent"
+                       FontSize="15"/>
+                        </DataTemplate>
+                    </ComboBox.ItemTemplate>
 
-                <TextBlock Text="PINCODE" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                <PasswordBox x:Name="PinBox" Style="{StaticResource KassaPasswordBox}" FontSize="20" Padding="6" PasswordChanged="PinBox_PasswordChanged" MaxLength="4"/>
+                </ComboBox>
 
-                <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" Margin="0,8,0,0"
+                <TextBlock Text="PIN" Style="{StaticResource MutedText}" Margin="0,0,0,6"/>
+                <Border Background="{StaticResource SurfaceAltBrush}" CornerRadius="12" BorderThickness="1" BorderBrush="{StaticResource BorderBrush0}">
+                    <PasswordBox x:Name="PinBox" FontSize="18" Padding="14,10" Background="Transparent" BorderThickness="0"
+                                 Foreground="{StaticResource TextPrimaryBrush}" CaretBrush="{StaticResource TextPrimaryBrush}"
+                                 PasswordChanged="PinBox_PasswordChanged" MaxLength="4"/>
+                </Border>
+
+                <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource AccentRedBrush}" Margin="0,10,0,0"
                            HorizontalAlignment="Center" TextWrapping="Wrap"/>
 
-                <Button Content="Log In" Style="{StaticResource KassaButton}"
+                <Button Content="Log In" Style="{StaticResource PosButton}" Margin="0,24,0,0" FontSize="16"
                         Command="{Binding LoginCommand}" HorizontalAlignment="Stretch"/>
 
-                <TextBlock Text="For example PINCode: Qaium = 1234"
-                           FontSize="11" Foreground="Gray" Margin="0,16,0,0"
+                <TextBlock Text="Example: Qaium - 1234"
+                           FontSize="11" Foreground="{StaticResource TextMutedBrush}" Margin="0,18,0,0"
                            HorizontalAlignment="Center"/>
             </StackPanel>
         </Border>

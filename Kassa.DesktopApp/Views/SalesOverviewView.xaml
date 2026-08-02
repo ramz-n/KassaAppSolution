@@ -1,0 +1,156 @@
+﻿<UserControl x:Class="Kassa.DesktopApp.Views.SalesOverviewView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid Background="{StaticResource AppBackgroundBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="230"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="{StaticResource SidebarBackgroundBrush}">
+            <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="20,24,20,22">
+                    <Border Width="34" Height="34" CornerRadius="10" Background="{StaticResource PurpleGradientBrush}">
+                        <TextBlock Text="QR" FontWeight="Bold" FontSize="17" Foreground="White"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="KassaApp" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,0,0,20">
+                    <Button Content="Back to Checkout" Style="{StaticResource SidebarNavButton}"
+                            Command="{Binding BackCommand}" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Top">
+                    <Button Content="Checkout" Style="{StaticResource SidebarNavButton}"
+                            Command="{Binding BackCommand}" HorizontalAlignment="Stretch"/>
+                    <Button Content="Sales" Style="{StaticResource SidebarNavButtonActive}" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Column="1" Margin="28,26,28,20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0">
+                    <TextBlock Text="Dashboard" Style="{StaticResource PageTitle}"/>
+                    <TextBlock Text="Sales performance and daily summary" Style="{StaticResource MutedText}" Margin="0,4,0,0"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="Refresh" Style="{StaticResource PosButtonSecondary}" Command="{Binding RefreshCommand}"/>
+            </Grid>
+
+            <Grid Grid.Row="1" Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="16"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Style="{StaticResource StatCard}" Background="{StaticResource PurpleGradientBrush}">
+                    <StackPanel>
+                        <TextBlock Text="Total Revenue" Foreground="White" Opacity="0.85" FontSize="12"/>
+                        <TextBlock Text="{Binding TotalRevenue, StringFormat=C}" Foreground="White" FontSize="24" FontWeight="Bold" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="2" Style="{StaticResource StatCard}" Background="{StaticResource TealGradientBrush}">
+                    <StackPanel>
+                        <TextBlock Text="Transactions" Foreground="White" Opacity="0.85" FontSize="12"/>
+                        <TextBlock Text="{Binding TransactionCount}" Foreground="White" FontSize="24" FontWeight="Bold" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="4" Style="{StaticResource StatCard}" Background="{StaticResource PinkGradientBrush}">
+                    <StackPanel>
+                        <TextBlock Text="Cash Revenue" Foreground="White" Opacity="0.85" FontSize="12"/>
+                        <TextBlock Text="{Binding CashRevenue, StringFormat=C}" Foreground="White" FontSize="24" FontWeight="Bold" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="6" Style="{StaticResource StatCard}" Background="{StaticResource SurfaceAltBrush}"
+                        BorderThickness="1" BorderBrush="{StaticResource AccentAmberBrush}">
+                    <StackPanel>
+                        <TextBlock Text="eSewa Revenue" Foreground="{StaticResource AccentAmberBrush}" FontSize="12"/>
+                        <TextBlock Text="{Binding EsewaRevenue, StringFormat=C}" Foreground="{StaticResource TextPrimaryBrush}" FontSize="24" FontWeight="Bold" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="20"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Style="{StaticResource Card}">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Grid.Row="0" Text="Recent Transactions" Style="{StaticResource SectionTitle}" Margin="0,0,0,12"/>
+                        <DataGrid Grid.Row="1" ItemsSource="{Binding Transactions}" AutoGenerateColumns="False"
+                                  IsReadOnly="True" FontSize="13" RowHeight="36" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Receipt #" Binding="{Binding ReceiptNumber}" Width="180"/>
+                                <DataGridTextColumn Header="Date/Time" Binding="{Binding Timestamp, StringFormat='yyyy-MM-dd HH:mm'}" Width="150"/>
+                                <DataGridTextColumn Header="Cashier" Binding="{Binding Cashier.Name}" Width="130"/>
+                                <DataGridTextColumn Header="Payment" Binding="{Binding PaymentMethod}" Width="90"/>
+                                <DataGridTextColumn Header="Total" Binding="{Binding Total, StringFormat=C}" Width="90"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="2" Style="{StaticResource Card}">
+                    <StackPanel>
+                        <TextBlock Text="Top 5 Products" Style="{StaticResource SectionTitle}" Margin="0,0,0,14"/>
+                        <TextBlock Text="Tax collected" Style="{StaticResource MutedText}" Margin="0,0,0,2"/>
+                        <TextBlock Text="{Binding TotalTax, StringFormat=C}" FontSize="20" FontWeight="Bold" Margin="0,0,0,18"/>
+
+                        <ItemsControl ItemsSource="{Binding TopProducts}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Grid Margin="0,0,0,14">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <Border Grid.Column="0" Width="30" Height="30" CornerRadius="15"
+                                                Background="{StaticResource PurpleGradientBrush}" Margin="0,0,10,0">
+                                            <TextBlock Text="{Binding QuantitySold}" Foreground="White" FontSize="11" FontWeight="Bold"
+                                                       HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                        </Border>
+                                        <TextBlock Grid.Column="1" Text="{Binding ProductName}" FontSize="13" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                        <TextBlock Grid.Column="2" Text="{Binding Revenue, StringFormat=C}" FontWeight="Bold" FontSize="13" VerticalAlignment="Center"/>
+                                    </Grid>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -4,186 +4,250 @@
              xmlns:enums="clr-namespace:Kassa.Domain.Enums;assembly=Kassa.Domain">
     <UserControl.Resources>
         <Style x:Key="CashPanelStyle" TargetType="StackPanel">
-        <Setter Property="Visibility" Value="Collapsed"/>
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding SelectedPaymentMethod}" Value="{x:Static enums:PaymentMethod.Cash}">
-                <Setter Property="Visibility" Value="Visible"/>
-            </DataTrigger>
-        </Style.Triggers>
-    </Style>
-    <Style x:Key="EsewaPanelStyle" TargetType="StackPanel">
-        <Setter Property="Visibility" Value="Collapsed"/>
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding SelectedPaymentMethod}" Value="{x:Static enums:PaymentMethod.Esewa}">
-                <Setter Property="Visibility" Value="Visible"/>
-            </DataTrigger>
-        </Style.Triggers>
-    </Style>
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SelectedPaymentMethod}" Value="{x:Static enums:PaymentMethod.Cash}">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="EsewaPanelStyle" TargetType="StackPanel">
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding SelectedPaymentMethod}" Value="{x:Static enums:PaymentMethod.Esewa}">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="CategoryChip" TargetType="Button" BasedOn="{StaticResource PosButtonSecondary}">
+            <Setter Property="Margin" Value="0,0,10,10"/>
+            <Style.Triggers>
+                <DataTrigger Value="True">
+                    <DataTrigger.Binding>
+                        <MultiBinding Converter="{StaticResource CategoryEqualsConverter}">
+                            <Binding Path="."/>
+                            <Binding Path="DataContext.SelectedCategory" RelativeSource="{RelativeSource AncestorType=UserControl}"/>
+                        </MultiBinding>
+                    </DataTrigger.Binding>
+                    <Setter Property="Background" Value="{StaticResource PurpleGradientBrush}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                    <Setter Property="BorderBrush" Value="{StaticResource AccentPurpleBrush}"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
     </UserControl.Resources>
 
+    <Grid Background="{StaticResource AppBackgroundBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="230"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="360"/>
+        </Grid.ColumnDefinitions>
 
-    <Grid Background="#F2F4F5">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*" />
-        </Grid.RowDefinitions>
+        <Border Grid.Column="0" Background="{StaticResource SidebarBackgroundBrush}">
+            <DockPanel LastChildFill="True">
 
-        <Border Grid.Row="0" Background="#1B1F23" Padding="12">
-            <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+                <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="20,24,20,22">
+                    <Border Width="34" Height="34" CornerRadius="10" Background="{StaticResource PurpleGradientBrush}">
+                        <TextBlock Text="QR" FontWeight="Bold" FontSize="17" Foreground="White"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <TextBlock Text="KassaApp" FontSize="16" FontWeight="Bold" VerticalAlignment="Center" Margin="10,0,0,0"/>
+                </StackPanel>
+
+                <Border DockPanel.Dock="Top" Background="{StaticResource SurfaceBrush}" CornerRadius="14"
+                        Padding="14" Margin="16,0,16,20">
+                    <StackPanel Orientation="Horizontal">
+                        <Border Width="38" Height="38" CornerRadius="19" Background="{StaticResource TealGradientBrush}">
+                            <TextBlock Text="&#128100;" FontSize="16" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding CurrentCashier.Name, Mode=OneWay}" FontSize="13" FontWeight="SemiBold"/>
+                            <TextBlock Style="{StaticResource MutedText}">
+                                <Run Text="Register: "/>
+                                <Run Text="{Binding OpenSession, Mode=OneWay, Converter={StaticResource KassaStatusConverter}}"/>
+                            </TextBlock>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <StackPanel DockPanel.Dock="Bottom" Margin="0,0,0,20">
+                    <Button Content="Open Register" Style="{StaticResource SidebarNavButton}"
+                            Command="{Binding OpenKassaCommand}" HorizontalAlignment="Stretch"/>
+                    <Button Content="Close Register" Style="{StaticResource SidebarNavButton}"
+                            Command="{Binding CloseKassaCommand}" HorizontalAlignment="Stretch"/>
+                    <Button Content="Log Out" Style="{StaticResource SidebarNavButton}"
+                            Command="{Binding LogoutCommand}" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Top">
+                    <Button Content="Checkout" Style="{StaticResource SidebarNavButtonActive}" HorizontalAlignment="Stretch"/>
+                    <Button Content="Products" Style="{StaticResource SidebarNavButton}"
+                            Command="{Binding OpenProductsCommand}" HorizontalAlignment="Stretch"/>
+                    <Button Content="Sales" Style="{StaticResource SidebarNavButton}"
+                            Command="{Binding OpenSalesOverviewCommand}" HorizontalAlignment="Stretch"/>
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <Grid Grid.Column="1" Margin="28,26,20,20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <Grid Grid.Row="0" Margin="0,0,0,20">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="320"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Foreground="White" FontSize="16" FontWeight="Bold" Padding="0,2,0,0">
-                    <Run Text="Cashier: "/>
-                    <Run Text="{Binding CurrentCashier.Name, Mode=OneWay}" FontWeight="Bold"/>
-                    <Run Text=" | Register:" />
-                    <Run Text="{Binding OpenSession, Converter={StaticResource KassaStatusConverter}, Mode=OneWay}" FontWeight="Bold"/>
-                </TextBlock>
+                <StackPanel Grid.Column="0" VerticalAlignment="Center">
+                    <TextBlock Text="Checkout" Style="{StaticResource PageTitle}"/>
+                    <TextBlock Text="Scan a barcode or tap an item below" Style="{StaticResource MutedText}" Margin="0,4,0,0"/>
+                </StackPanel>
+                <TextBox Grid.Column="1" x:Name="BarcodeBox" Style="{StaticResource SearchBox}" VerticalAlignment="Center"
+                         Text="{Binding BarcodeInput, UpdateSourceTrigger=PropertyChanged}"
+                         KeyDown="BarcodeBox_KeyDown" Tag="Scan or search products, then press Enter"/>
+            </Grid>
 
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="10,0,0,0">
-                    <Button Content="Open Register" Style="{StaticResource KassaButtonSecondary}" Command="{Binding OpenKassaCommand}" FontSize="14"  Padding="5" Background="Green"/>
-                    <Button Content="Close Register" Style="{StaticResource KassaButtonSecondary}" Command="{Binding CloseKassaCommand}" FontSize="14"  Padding="5" Background="Yellow"/>
-                    <Button Content="Products" Style="{StaticResource KassaButtonSecondary}" Command="{Binding OpenProductsCommand}" Margin="0, 0 , 10, 0" FontSize="14" Padding="5"/>
-                    <Button Content="Log Out" Style="{StaticResource KassaButtonDanger}" Command="{Binding LogoutCommand}" FontSize="14" Padding="5" />
+            <TextBlock Grid.Row="1" Text="{Binding StatusMessage}" Margin="0,0,0,10" FontSize="13">
+                <TextBlock.Style>
+                    <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{StaticResource AccentTealBrush}"/>
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsError}" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource AccentRedBrush}"/>
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </TextBlock.Style>
+            </TextBlock>
+        </Grid>
+
+        <Border Grid.Column="2" Background="{StaticResource SurfaceBrush}" CornerRadius="18"
+                Margin="0,20,20,20" Padding="20">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <Grid Grid.Row="0" Margin="0,0,0,14">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="Current Sale" Style="{StaticResource SectionTitle}"/>
+                        <TextBlock Text="{Binding CurrentCashier.Name, Mode=OneWay}" Style="{StaticResource MutedText}"/>
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="Clear Cart" Style="{StaticResource IconButton}" Command="{Binding ClearCartCommand}" />
+                </Grid>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                    <ItemsControl ItemsSource="{Binding CartScannedItems}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{StaticResource SurfaceAltBrush}" CornerRadius="12" Padding="12" Margin="0,0,0,10">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
+                                        <StackPanel Grid.Column="0">
+                                            <TextBlock Text="{Binding ProductName}" FontWeight="SemiBold" FontSize="13" TextWrapping="Wrap"/>
+                                            <TextBlock FontSize="11.5" Style="{StaticResource MutedText}">
+                                                <Run Text="{Binding UnitPrice, Mode=OneWay}"/>
+                                                <Run Text=" / "/>
+                                                <Run Text="{Binding UnitLabel, Mode=OneWay}"/>
+                                            </TextBlock>
+                                            <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                                                <Button Content="&#8722;" Style="{StaticResource StepperButton}"
+                                                        Command="{Binding DataContext.DecreaseQtyCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                        CommandParameter="{Binding}"/>
+                                                <TextBlock Text="{Binding Quantity}" Margin="10,0" VerticalAlignment="Center" FontWeight="SemiBold"/>
+                                                <Button Content="+" Style="{StaticResource StepperButton}"
+                                                        Command="{Binding DataContext.IncreaseQtyCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                        CommandParameter="{Binding}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                        <StackPanel Grid.Column="1" HorizontalAlignment="Right">
+                                            <TextBlock Text="{Binding NetTotal, StringFormat=C}" FontWeight="Bold" HorizontalAlignment="Right"/>
+                                            <Button Content="&#10005;" Style="{StaticResource IconButton}" HorizontalAlignment="Right" Margin="0,10,0,0"
+                                                    Command="{Binding DataContext.RemoveScannedItemCommand, RelativeSource={RelativeSource AncestorType=ItemsControl}}"
+                                                    CommandParameter="{Binding}"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <StackPanel Grid.Row="2" Margin="0,14,0,0">
+                    <Grid Margin="0,0,0,6">
+                        <TextBlock Text="Subtotal" Style="{StaticResource MutedText}" HorizontalAlignment="Left"/>
+                        <TextBlock Text="{Binding Subtotal, StringFormat=C}" FontSize="13" HorizontalAlignment="Right"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,14">
+                        <TextBlock Text="Tax" Style="{StaticResource MutedText}" HorizontalAlignment="Left"/>
+                        <TextBlock Text="{Binding TaxTotal, StringFormat=C}" FontSize="13" HorizontalAlignment="Right"/>
+                    </Grid>
+
+                    <Border Background="{StaticResource PurpleGradientBrush}" CornerRadius="14" Padding="16,12" Margin="0,0,0,16">
+                        <Grid>
+                            <TextBlock Text="Total" FontWeight="SemiBold" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding GrandTotal, StringFormat=C}" FontWeight="Bold" FontSize="20" Foreground="White" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </Border>
+
+                    <TextBlock Text="Payment Method" Style="{StaticResource MutedText}" Margin="0,0,0,8"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <RadioButton Style="{StaticResource PaymentIconToggle}" GroupName="Payment"
+                                     IsChecked="{Binding SelectedPaymentMethod, Converter={StaticResource PaymentMethodConverter}, ConverterParameter=Cash}">
+                            <StackPanel>
+                                <TextBlock Text="$" FontSize="18" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Cash" FontSize="11" Foreground="White" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </RadioButton>
+                        <RadioButton Style="{StaticResource PaymentIconToggle}" GroupName="Payment"
+                                     IsChecked="{Binding SelectedPaymentMethod, Converter={StaticResource PaymentMethodConverter}, ConverterParameter=Esewa}">
+                            <StackPanel>
+                                <TextBlock Text="&#9638;" FontSize="17" FontWeight="Bold" Foreground="White" HorizontalAlignment="Center"/>
+                                <TextBlock Text="eSewa" FontSize="11" Foreground="White" HorizontalAlignment="Center"/>
+                            </StackPanel>
+                        </RadioButton>
+                    </StackPanel>
+
+                    <StackPanel Style="{StaticResource CashPanelStyle}" Margin="0,0,0,8">
+                        <TextBlock Text="Amount Received" Style="{StaticResource MutedText}" Margin="0,0,0,6"/>
+                        <TextBox Style="{StaticResource KassaTextBox}" Text="{Binding AmountReceived, UpdateSourceTrigger=PropertyChanged}"/>
+                        <TextBlock Text="{Binding ChangeDuePreview}" Margin="0,8,0,0" FontSize="14" FontWeight="SemiBold"
+                                   Foreground="{StaticResource AccentTealBrush}"/>
+                    </StackPanel>
+
+                    <StackPanel Style="{StaticResource EsewaPanelStyle}" HorizontalAlignment="Center" Margin="0,0,0,8">
+                        <StackPanel Visibility="{Binding EsewaQrcode, Converter={StaticResource NullToVisibilityConverter}}"
+                                    HorizontalAlignment="Center">
+                            <Border Background="White" CornerRadius="10" Padding="8" HorizontalAlignment="Center">
+                                <Image Source="{Binding EsewaQrcode}" Width="160" Height="160" SnapsToDevicePixels="True"/>
+                            </Border>
+                            <TextBlock Text="Scan with the eSewa app" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"
+                                       HorizontalAlignment="Center" Margin="0,8,0,0"/>
+                        </StackPanel>
+                        <TextBlock Text="Generating QR code..."
+                                   Visibility="{Binding EsewaQrcode, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverse}"
+                                   HorizontalAlignment="Center" Foreground="{StaticResource TextSecondaryBrush}" FontStyle="Italic" Margin="0,10,0,0"/>
+                    </StackPanel>
+
+                    <Button Content="Place Order" Style="{StaticResource PosButton}" FontSize="16"
+                            Command="{Binding CompleteSaleCommand}" HorizontalAlignment="Stretch"/>
                 </StackPanel>
             </Grid>
         </Border>
-
-        <Grid Grid.Row="1" Margin="16">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="2*" />
-                <ColumnDefinition Width="16" />
-                <ColumnDefinition Width="1*" />
-            </Grid.ColumnDefinitions>
-
-            <Grid Grid.Column="0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <TextBox Grid.Row="0" x:Name="BarcodeBox" Style="{StaticResource KassaTextBox}"
-                         Text="{Binding BarcodeInput, UpdateSourceTrigger=PropertyChanged}"
-                         KeyDown="BarcodeBox_KeyDown"
-                         Tag="Scan product's barcode or type a product name, then press Enter" Padding="5"/>
-
-                <TextBlock Grid.Row="1" Text="{Binding StatusMessage}" Margin="4,6,4,6" FontSize="14">
-                    <TextBlock.Style>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Foreground" Value="#2C6E49"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsError}" Value="True">
-                                    <Setter Property="Foreground" Value="#B3261E"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBlock.Style>
-                </TextBlock>
-
-                <DataGrid Grid.Row="2" ItemsSource="{Binding CartScannedItems}" AutoGenerateColumns="False"
-                          CanUserAddRows="False" RowHeight="40" FontSize="15" IsReadOnly="False" ColumnHeaderStyle="{StaticResource KassaColumnHeaderStyle}"
-                          CellStyle="{StaticResource KassaCellStyle}">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Product" Binding="{Binding ProductName}" IsReadOnly="True" Width="2*"/>
-
-                        <DataGridTemplateColumn Header="Qty" Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-
-                                        <Button Content="-" 
-                                            Command="{Binding DataContext.DecreaseQtyCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            CommandParameter="{Binding}" Padding="15,5"/>
-
-                                        <TextBox Text="{Binding Quantity, UpdateSourceTrigger=LostFocus}" FontSize="14" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="5"/>
-
-                                        <Button Content="+" 
-                                            Command="{Binding DataContext.IncreaseQtyCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            CommandParameter="{Binding}" Padding="15,5"/>                  
-
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-
-                        <DataGridTextColumn Header="Unit" Binding="{Binding UnitLabel}" IsReadOnly="True" Width="80"/>
-                        <DataGridTextColumn Header="Price" Binding="{Binding UnitPrice, StringFormat=C}" IsReadOnly="True" Width="120"/>
-                        <DataGridTextColumn Header="Discount" Binding="{Binding DiscountAmount, UpdateSourceTrigger=LostFocus, StringFormat=C}" Width="120"/>
-                        <DataGridTextColumn Header="Total" Binding="{Binding NetTotal, StringFormat=C}" IsReadOnly="True" Width="120"/>
-                        <DataGridTemplateColumn Header="" Width="*">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <Button Content="Remove" Command="{Binding DataContext.RemoveScannedItemCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}"
-                                            CommandParameter="{Binding}" Style="{StaticResource KassaRemoveButtonStyle}"/>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Grid>
-
-            <Border Grid.Column="2" Background="White" CornerRadius="10" Padding="20">
-                <StackPanel>
-                    <TextBlock Text="Order Summary" FontSize="20" FontWeight="Bold" Margin="0,0,0,16"/>
-
-                    <Grid Margin="0,0,0,4">
-                        <TextBlock Text="Subtotal" HorizontalAlignment="Left"/>
-                        <TextBlock Text="{Binding Subtotal, StringFormat=C}" HorizontalAlignment="Right"/>
-                    </Grid>
-                    <Grid Margin="0,0,0,4">
-                        <TextBlock Text="Tax" HorizontalAlignment="Left"/>
-                        <TextBlock Text="{Binding TaxTotal, StringFormat=C}" HorizontalAlignment="Right"/>
-                    </Grid>
-                    <Separator Margin="0,8"/>
-                    <Grid Margin="0,0,0,16">
-                        <TextBlock Text="Total" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left"/>
-                        <TextBlock Text="{Binding GrandTotal, StringFormat=C}" FontSize="22" FontWeight="Bold" HorizontalAlignment="Right"/>
-                    </Grid>
-
-                    <StackPanel Visibility="{Binding IsPaymentPanelOpen, Converter={StaticResource BoolToCollapsedConverter}, ConverterParameter=Inverse}">
-                        <Button Content="Clear Cart" Style="{StaticResource KassaButtonSecondary}" Command="{Binding ClearCartCommand}" HorizontalAlignment="Stretch" Padding="5"/>
-                        <Button Content="Checkout" Style="{StaticResource KassaButton}" Command="{Binding StartPaymentCommand}" HorizontalAlignment="Stretch" Padding="5"/>
-                    </StackPanel>
-
-                    <StackPanel Visibility="{Binding IsPaymentPanelOpen, Converter={StaticResource BoolToCollapsedConverter}}">
-                        <TextBlock Text="Payment Method" FontWeight="SemiBold" Margin="0,8,0,4"/>
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-                            <RadioButton Content="Cash" GroupName="Payment" Margin="0,0,16,0" FontSize="16"
-                                         IsChecked="{Binding SelectedPaymentMethod, Converter={StaticResource PaymentMethodConverter}, ConverterParameter=Cash}"/>
-                            <RadioButton Content="eSewa" GroupName="Payment" FontSize="16"
-                                         IsChecked="{Binding SelectedPaymentMethod, Converter={StaticResource PaymentMethodConverter}, ConverterParameter=Esewa}"/>
-                        </StackPanel>
-
-                        <StackPanel Style="{StaticResource CashPanelStyle}">
-                            <TextBlock Text="Amount Received" FontWeight="SemiBold" Margin="0,0,0,4"/>
-                            <TextBox Style="{StaticResource KassaTextBox}" Text="{Binding AmountReceived, UpdateSourceTrigger=PropertyChanged}"/>
-                            <TextBlock Text="{Binding ChangeDuePreview}" Margin="0,6,0,0" FontSize="16" FontWeight="SemiBold"/>
-                        </StackPanel>
-
-                        <StackPanel Style="{StaticResource EsewaPanelStyle}" HorizontalAlignment="Center">
-                            <TextBlock Text="Scan with the eSewa app" FontWeight="SemiBold"
-                                       HorizontalAlignment="Center" TextWrapping="Wrap" Margin="0,0,0,8"/>
-                            <StackPanel Visibility="{Binding EsewaQrcode, Converter={StaticResource NullToVisibilityConverter}}"
-                                        HorizontalAlignment="Center">
-                                <Border Background="White" BorderBrush="#DADCE0" BorderThickness="1" CornerRadius="6" Padding="8" HorizontalAlignment="Center">
-                                    <Image Source="{Binding EsewaQrcode}" Width="200" Height="200" SnapsToDevicePixels="True"/>
-                                </Border>
-                                <TextBlock HorizontalAlignment="Center" Margin="0,8,0,0" FontSize="15">
-                                    <Run Text="Amount: Rs. "/><Run Text="{Binding GrandTotal, Mode=OneWay}" FontWeight="Bold"/>
-                                </TextBlock>
-                            </StackPanel>
-                            <TextBlock Text="Generating QR code..."
-                                       Visibility="{Binding EsewaQrcode, Converter={StaticResource NullToVisibilityConverter}, ConverterParameter=Inverse}"
-                                       HorizontalAlignment="Center" Foreground="Gray" FontStyle="Italic" Margin="0,20,0,0"/>
-                        </StackPanel>
-
-                        <Button Content="Confirm Payment" Style="{StaticResource KassaButton}" Command="{Binding CompleteSaleCommand}" Margin="0,16,0,4" HorizontalAlignment="Stretch"/>
-                        <Button Content="Cancel" Style="{StaticResource KassaButtonSecondary}" Command="{Binding CancelPaymentCommand}" HorizontalAlignment="Stretch"/>
-                    </StackPanel>
-                </StackPanel>
-            </Border>
-        </Grid>
     </Grid>
 </UserControl>

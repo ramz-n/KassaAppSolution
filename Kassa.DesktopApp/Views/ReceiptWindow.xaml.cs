@@ -2,6 +2,7 @@
 using Kassa.Domain.Enums;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Kassa.DesktopApp.Views
 {
@@ -22,7 +23,8 @@ namespace Kassa.DesktopApp.Views
                     Text = text,
                     FontWeight = bold ? FontWeights.Bold : FontWeights.Normal,
                     FontSize = size,
-                    Margin = new Thickness(0, 1, 0, 1)
+                    Margin = new Thickness(0, 1, 0, 1),
+                    Foreground = Brushes.Black
                 });
             }
 

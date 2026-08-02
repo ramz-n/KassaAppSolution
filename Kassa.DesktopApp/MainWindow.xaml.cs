@@ -29,7 +29,7 @@ namespace Kassa.DesktopApp
             var view = new CheckoutView { DataContext = vm };
             vm.LogoutRequested += (_, _) => ShowLoginScreen();
             vm.OpenProductsRequested += (_, _) => ShowProductsScreen(cashier);
-
+            vm.OpenSalesOverviewRequested += (_, _) => ShowSalesOverview(cashier);
             MainContent.Content = view;
         }
 
@@ -37,6 +37,15 @@ namespace Kassa.DesktopApp
         {
             var vm = App.AppHost.Services.GetRequiredService<ProductViewModel>();
             var view = new ProductView { DataContext = vm };
+            vm.BackRequested += (_, _) => ShowCheckoutScreen(cashier);
+            MainContent.Content = view;
+            _ = vm.LoadAsync();
+        }
+
+        public void ShowSalesOverview(Cashier cashier)
+        {
+            var vm = App.AppHost.Services.GetRequiredService<SalesOverviewViewModel>();
+            var view = new SalesOverviewView { DataContext = vm };
             vm.BackRequested += (_, _) => ShowCheckoutScreen(cashier);
             MainContent.Content = view;
             _ = vm.LoadAsync();
