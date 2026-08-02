@@ -92,4 +92,25 @@ namespace Kassa.DesktopApp.Converters
         public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
             throw new NotSupportedException();
     }
+
+    public class ResourceKeyToBrushConverter : IValueConverter
+    {
+        public object? Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
+        {
+            if (value is not string key) return null;
+            return System.Windows.Application.Current.TryFindResource(key);
+        }
+
+        public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
+            throw new NotSupportedException();
+    }
+
+    public class CategoryEqualsConverter : IMultiValueConverter
+    {
+        public object Convert(object?[] values, Type targetType, object? parameter, CultureInfo culture) =>
+            values.Length == 2 && Equals(values[0]?.ToString(), values[1]?.ToString());
+
+        public object[] ConvertBack(object? value, Type[] targetTypes, object? parameter, CultureInfo culture) =>
+            throw new NotSupportedException();
+    }
 }
