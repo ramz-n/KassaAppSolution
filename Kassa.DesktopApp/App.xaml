@@ -4,6 +4,10 @@
         xmlns:conv="clr-namespace:Kassa.DesktopApp.Converters">
     <Application.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="Styles.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+            
             <conv:KassaStatusConverter x:Key="KassaStatusConverter" />
             <conv:UtcToLocalTimeConverter x:Key="UtcToLocalTimeConverter" />
             <conv:BoolToCollapsedConverter x:Key="BoolToCollapsedConverter" />

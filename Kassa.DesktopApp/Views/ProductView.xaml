@@ -14,8 +14,8 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="Products" Foreground="White" FontSize="18" VerticalAlignment="Center"/>
-                <Button Command="{Binding BackCommand}" Grid.Column="1" Content="Back" Padding="5"/>
+                <TextBlock Grid.Column="0" Text="Product Management" Foreground="White" FontSize="18" VerticalAlignment="Center"/>
+                <Button Command="{Binding BackCommand}" Style="{StaticResource KassaButtonSecondary}" Grid.Column="1" Content="Back to Kassa" Padding="5"/>
             </Grid>
         </Border>
 
@@ -33,13 +33,15 @@
                 </Grid.RowDefinitions>
 
                 <DataGrid Grid.Row="0" ItemsSource="{Binding Products}" SelectedItem="{Binding SelectedProduct}"
-                          AutoGenerateColumns="False" IsReadOnly="True" FontSize="14" RowHeight="34">
+                          AutoGenerateColumns="False" IsReadOnly="True" FontSize="14" RowHeight="34"
+                          ColumnHeaderStyle="{StaticResource KassaColumnHeaderStyle}"
+                            CellStyle="{StaticResource KassaCellStyle}">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Barcode" Binding="{Binding Barcode}" Width="140"/>
                         <DataGridTextColumn Header="Name" Binding="{Binding ProductName}" Width="*"/>
-                        <DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat=C}" Width="80"/>
-                        <DataGridTextColumn Header="Tax" Binding="{Binding Tax, StringFormat=P0}" Width="60"/>
-                        <DataGridTextColumn Header="Stock" Binding="{Binding StockQty}" Width="70"/>
+                        <DataGridTextColumn Header="Price" Binding="{Binding Price, StringFormat=C}" Width="120"/>
+                        <DataGridTextColumn Header="Tax" Binding="{Binding Tax, StringFormat=P0}" Width="100"/>
+                        <DataGridTextColumn Header="Stock" Binding="{Binding StockQty}" Width="100"/>
                     </DataGrid.Columns>
                 </DataGrid>
 
@@ -81,8 +83,8 @@
 
                     <TextBlock Text="{Binding ErrorMessage}" Foreground="Red" TextWrapping="Wrap" Margin="0,0,0,10"/>
 
-                    <Button Content="New Product" Command="{Binding NewProductCommand}" HorizontalAlignment="Stretch" Padding="5"/>
-                    <Button Content="Save" Command="{Binding SaveCommand}" HorizontalAlignment="Stretch" Padding="5"/>
+                    <Button Content="New Product" Style="{StaticResource KassaButtonSecondary}" Command="{Binding NewProductCommand}" HorizontalAlignment="Stretch" Padding="5"/>
+                    <Button Content="Save" Style="{StaticResource KassaButton}" Command="{Binding SaveCommand}" HorizontalAlignment="Stretch" Padding="5"/>
                 </StackPanel>
             </Border>
 
