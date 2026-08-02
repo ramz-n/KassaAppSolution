@@ -12,6 +12,7 @@ namespace Kassa.Infrastructure
         public DbSet<Cashier> Cashiers => Set<Cashier>();
         public DbSet<KassaSession> KassaSessions => Set<KassaSession>();
         public DbSet<Transaction> Transactions => Set<Transaction>();
+        public DbSet<TransactionLine> TransactionLines => Set<TransactionLine>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -39,6 +40,12 @@ namespace Kassa.Infrastructure
                     v => v.ToUniversalTime(),
                     v => DateTime.SpecifyKind(v, DateTimeKind.Utc)
                 );
+                e.HasIndex(t => t.ReceiptNumber).IsUnique();
+                e.HasMany(t => t.Lines)
+                    .WithOne(l => l.Transaction)
+                    .HasForeignKey(l => l.TransactionId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                e.Property(t => t.PaymentMethod).HasConversion<string>();
             });
         }
     }
