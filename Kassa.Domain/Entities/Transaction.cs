@@ -15,6 +15,7 @@ namespace Kassa.Domain.Entities
         public decimal Total { get; set; }  
         public decimal? AmountTendered { get; set; }
         public decimal? ChangeGiven { get; set; }
+        public bool IsVoided { get; set; }
         public List<TransactionLine> Lines { get; set; } = new();
     }
 }
