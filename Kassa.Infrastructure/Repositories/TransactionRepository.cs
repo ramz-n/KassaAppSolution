@@ -32,16 +32,18 @@ namespace Kassa.Infrastructure.Repositories
         public Task<List<Transaction>> GetByDateRangeAsync(DateTime from, DateTime to, int? cashierId = null)
         {
             return _context.Transactions
-                .Include(t => t.Cashier)
-                .Where(t => t.Timestamp >= from && t.Timestamp <= to )
-                .Where(t => cashierId == null || t.CashierId == cashierId)
-                .OrderByDescending(t => t.Timestamp)
-                .ToListAsync();
+            .Include(t => t.Cashier)
+            .Include(t => t.Lines)
+            .Where(t => t.Timestamp >= from && t.Timestamp <= to && !t.IsVoided)
+            .Where(t => cashierId == null || t.CashierId == cashierId)
+            .OrderByDescending(t => t.Timestamp)
+            .ToListAsync();
         }
 
         public Task<Transaction?> GetByIdWithLinesAsync(int id)
         {
             return _context.Transactions.Include(t => t.Cashier)
+                .Include(t => t.Cashier)
                 .Include(t => t.Lines)
                 .FirstOrDefaultAsync(t => t.Id == id);
         }
@@ -51,7 +53,8 @@ namespace Kassa.Infrastructure.Repositories
             var sum = await _context.Transactions
             .Where(t => t.Timestamp >= from && t.Timestamp <= to
                         && t.CashierId == cashierId
-                        && t.PaymentMethod == PaymentMethod.Cash)
+                        && t.PaymentMethod == PaymentMethod.Cash
+                        && !t.IsVoided)
             .SumAsync(t => (decimal?)t.Total);
             return sum ?? 0m;
         }
