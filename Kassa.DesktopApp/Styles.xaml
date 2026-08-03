@@ -254,7 +254,7 @@
 
     <Style x:Key="KassaTextBox" TargetType="TextBox">
         <Setter Property="FontSize" Value="15"/>
-        <Setter Property="Padding" Value="14,10"/>
+        <Setter Property="Padding" Value="5,5"/>
         <Setter Property="MinHeight" Value="44"/>
         <Setter Property="Background" Value="{StaticResource SurfaceAltBrush}"/>
         <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
@@ -277,6 +277,7 @@
     <Style x:Key="SearchBox" TargetType="TextBox" BasedOn="{StaticResource KassaTextBox}">
         <Setter Property="FontSize" Value="14"/>
         <Setter Property="MinHeight" Value="40"/>
+        <Setter Property="Margin" Value="0,5,0,0"/>
     </Style>
 
     <Style TargetType="DataGrid">
@@ -336,7 +337,7 @@
         <Setter Property="Padding" Value="10,8"/>
     </Style>
 
-    <Style TargetType="ScrollBar">
+    <Style x:Key="KassaScrollBar" TargetType="ScrollBar">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Width" Value="8"/>
     </Style>

@@ -106,7 +106,16 @@
                             <TextBox Style="{StaticResource KassaTextBox}" Text="{Binding EditTax}" Margin="0,4,0,12"/>
 
                             <TextBlock Text="Unit Type" Style="{StaticResource MutedText}"/>
-                            <ComboBox ItemsSource="{Binding UnitTypes}" SelectedItem="{Binding EditUnitType}" Margin="0,4,0,12" Padding="10,8"/>
+                            <ComboBox ItemsSource="{Binding UnitTypes}" SelectedItem="{Binding EditUnitType}" Margin="0,4,0,12" Padding="10,8">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding}" 
+                                            Foreground="Black" 
+                                            Background="Transparent"
+                                            FontSize="15"/>         
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
 
                             <TextBlock Text="Stock Quantity" Style="{StaticResource MutedText}"/>
                             <TextBox Style="{StaticResource KassaTextBox}" Text="{Binding EditStock}" Margin="0,4,0,14"/>
