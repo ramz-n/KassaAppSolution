@@ -76,9 +76,9 @@
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock FontSize="13" Margin="0,2,0,2">
-                                            <Run Text="{Binding Name, Mode=OneWay}"/>
+                                            <Run Text="{Binding ProductName, Mode=OneWay}"/>
                                             <Run Text=" — "/>
-                                            <Run Text="{Binding StockQuantity, Mode=OneWay}"/>
+                                            <Run Text="{Binding StockQty, Mode=OneWay}"/>
                                             <Run Text=" left"/>
                                         </TextBlock>
                                     </DataTemplate>
